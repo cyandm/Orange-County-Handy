@@ -1,0 +1,401 @@
+@import "tailwindcss";
+
+/*Poppins Font Family*/
+@layer base {
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 100;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-Thin.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-Thin.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-Thin.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 200;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-ExtraLight.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-ExtraLight.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-ExtraLight.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-Light.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-Light.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-Light.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-Regular.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-Regular.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-Regular.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-Medium.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-Medium.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-Medium.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-SemiBold.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-SemiBold.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-SemiBold.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-Bold.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-Bold.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-Bold.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-ExtraBold.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-ExtraBold.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-ExtraBold.ttf") format("truetype");
+  }
+
+  @font-face {
+    font-family: "Poppins";
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src:
+      url("../../font/poppins/woff2/Poppins-Black.woff2") format("woff2"),
+      url("../../font/poppins/woff/Poppins-Black.woff") format("woff"),
+      url("../../font/poppins/ttf/Poppins-Black.ttf") format("truetype");
+  }
+}
+
+@layer base {
+  body {
+    font-family: "Poppins", sans-serif;
+  }
+
+  svg {
+    width: inherit;
+    height: inherit;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@theme {
+  --color-cynBgBase: #f9f9f9;
+  --color-cynBG: #ffffff;
+  --color-cynTextWhite: #ffffff;
+  --color-cynTextBlack: #151515;
+  --color-cynTextGray: #5b5b5b;
+  --color-cynYellow: #f4c400;
+  --color-cynYellowLight: #f8ecbb;
+  --color-cynWhite: #ffffff;
+  --color-cynBlack: #151515;
+  --color-cynHover: #151515;
+  --color-cynRed: #ef1414;
+  --color-cynBorder: #d3d3d3;
+  --color-cynBorderHover: #5b5b5b;
+  --color-cynBlue: #2969ff;
+  --color-cynStars: #f4c400;
+
+  --animate-fade-in-up: fade-in-up 0.4s ease-out both;
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+}
+
+:root {
+  color-scheme: light;
+}
+
+.container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+button,
+a {
+  cursor: pointer;
+}
+
+.scrollbar {
+  scrollbar-width: none !important;
+}
+
+.scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  display: none !important;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  display: none !important;
+}
+
+#breadcrumb {
+  scrollbar-width: none !important;
+}
+
+#breadcrumb nav::-webkit-scrollbar {
+  display: none !important;
+}
+
+#breadcrumb nav::-webkit-scrollbar-track {
+  display: none !important;
+}
+
+#breadcrumb nav::-webkit-scrollbar-thumb {
+  display: none !important;
+}
+
+.primary-btn {
+  @apply py-2 px-4 text-sm font-normal bg-cynYellow text-cynTextBlack rounded-lg border border-transparent hover:border-cynBorderHover transition-all duration-300;
+}
+
+.secondary-btn {
+  @apply py-2 px-4 text-sm font-normal bg-cynBlack text-cynTextWhite rounded-lg hover:bg-[#2C2D35] transition-all duration-300;
+}
+
+.tertiary-btn {
+  @apply py-2 px-4 text-sm font-normal bg-cynWhite text-cynTextBlack rounded-lg border border-cynBorder hover:border-cynBlack transition-all duration-300;
+}
+
+.btn-have-icon {
+  @apply inline-flex items-center gap-2 !ps-2;
+}
+
+/*-------loading-dots: . .. ... ..---------*/
+.loading-dots span {
+  animation: loading-dots-second 1.6s steps(1, end) infinite;
+}
+
+.loading-dots span:first-child {
+  animation: none;
+}
+
+.loading-dots span:last-child {
+  animation-name: loading-dots-third;
+}
+
+@keyframes loading-dots-second {
+  0% {
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+}
+
+@keyframes loading-dots-third {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0;
+  }
+}
+
+.primary-input,
+.secondary-input {
+  @apply flex items-center gap-2 cursor-text rounded-lg border border-cynBorder bg-cynBgBase text-sm font-normal text-cynTextGray transition-all duration-300 hover:border-cynBorderHover focus-within:border-cynBorderHover has-[select]:cursor-pointer [&_i]:pointer-events-none [&_i]:flex [&_i]:size-6 [&_i]:shrink-0 [&_i]:items-center [&_i]:justify-center [&_i_svg]:stroke-[1.5];
+
+  & :is(input, select, textarea) {
+    @apply min-w-0 flex-1 self-stretch cursor-[inherit] appearance-none border-0 bg-transparent p-0 text-cynTextBlack outline-none placeholder:text-cynTextGray focus:ring-0;
+  }
+}
+
+.primary-input {
+  @apply px-3 py-2;
+}
+
+.secondary-input {
+  @apply px-4 py-2.5;
+}
+
+.mobile-menu-scroll {
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
+
+/*-------mobile-menu---------*/
+#mobile-menu li {
+  position: relative;
+}
+
+#mobile-menu > li {
+  @apply w-full mx-auto;
+}
+
+#mobile-menu li a {
+  display: block;
+}
+
+#mobile-menu li ul {
+  display: none;
+  position: static;
+  width: 100%;
+  @apply gap-0.5 [&>li]:border-t [&>li]:border-cynBorder [&>li]:first:border-t-0 flex-col text-cynTextBlack [&_li_a]:flex [&_li_a]:py-3 [&_li_a]:w-full text-base font-semibold;
+}
+
+#mobile-menu .sub-menu-toggle {
+  display: none;
+  cursor: pointer;
+}
+
+#mobile-menu i {
+  width: 100%;
+  text-align: end;
+  inset-inline-end: 0;
+  position: absolute;
+  z-index: 0;
+  line-height: 0;
+  font-style: normal;
+}
+
+#mobile-menu .menu-item-has-children > .sub-menu-toggle {
+  display: block;
+}
+
+/*-------main-menu---------*/
+#main-menu li {
+  position: relative;
+}
+
+#main-menu li ul {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 50px;
+  inset-inline-start: 0;
+  list-style: none;
+  margin: 0;
+  padding: 1rem;
+  background: var(--color-cynBG);
+  border: 1px solid var(--color-cynYellow);
+  border-radius: 1.25rem;
+  transition: all 0.3s ease;
+  @apply [&>li]:border-t-2 [&>li]:border-cynBorder [&>li]:first:border-t-0;
+}
+
+#main-menu li ul li {
+  min-width: 12.5rem;
+}
+
+#main-menu li a {
+  display: block;
+  white-space: nowrap;
+}
+
+#main-menu li ul li a {
+  padding: 0.625rem;
+  display: block;
+}
+
+#main-menu li:hover > ul {
+  pointer-events: all;
+  opacity: 1;
+}
+
+#main-menu li ul li ul {
+  top: 0;
+  inset-inline-start: 100%;
+}
+
+#main-menu li ul li:hover > ul {
+  display: block;
+}
+
+#main-menu > li.menu-item-has-children a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#main-menu > li.menu-item-has-children > ul > li > a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+#main-menu li.menu-item-has-children::after {
+  content: "";
+  position: absolute;
+  top: 90%;
+  left: 0;
+  right: -16px;
+  width: 16vw;
+  height: 40px;
+  z-index: 51;
+  pointer-events: none;
+  opacity: 0;
+}
+
+#main-menu li.menu-item-has-children:hover::after {
+  pointer-events: auto;
+}
+
+#main-menu li.menu-item-has-children:hover li {
+  color: var(--color-cynTextBlack);
+}
+
+/* #main-menu > li:hover {
+  color: var(--color-cynYellow);
+} */
+
+#main-menu li li:hover {
+  color: var(--color-cynYellow) !important;
+}

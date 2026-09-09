@@ -1,0 +1,64 @@
+---
+description: Blog category/tag archive pages — layout, sidebar, sort, pagination
+globs:
+  - category.php
+  - tag.php
+  - archive.php
+  - partials/parts/blog/archive-*.php
+  - assets/js/functions/blogArchiveSort.js
+---
+
+# Blog Taxonomy Archive (orange-county-handy)
+
+Separate from [`templates/blog.php`](templates/blog.php) (ACF landing page with tabs).
+
+## Template hierarchy
+
+| URL | Template |
+|-----|----------|
+| `/category/{slug}/` | `category.php` |
+| `/tag/{slug}/` | `tag.php` |
+| Other archives | `archive.php` (fallback) |
+
+All route to [`partials/parts/blog/archive-layout.php`](partials/parts/blog/archive-layout.php).
+
+## Layout grid
+
+`lg:grid-cols-13` — sidebar `lg:col-span-4 xl:col-span-3`, content `lg:col-span-9 xl:col-span-10`.
+
+## Partials
+
+| File | Role |
+|------|------|
+| `archive-layout.php` | Query, grid, loop, term description |
+| `archive-toolbar.php` | Title + sort pills (xl+) + mobile sort select + filter button |
+| `archive-sidebar.php` | Hierarchical categories + tags (accordion) |
+| `archive-mobile-filter.php` | Modal `blog-filter-modal` with sidebar duplicate |
+| `pagination.php` | `mode: archive` — `get_pagenum_link()` + preserves `orderby` |
+
+## Query (`archive-layout.php`)
+
+- `posts_per_page: 24`
+- Sort via `?orderby=`:
+
+| Value | Query |
+|-------|--------|
+| (empty) / `date` | `date DESC` |
+| `date-asc` | `date ASC` |
+| `popularity` | `meta_key: post_views_count`, `meta_value_num DESC` |
+
+## Sidebar
+
+- Direct `get_term_link()` navigation (no cross-tax filters)
+- Active: `bg-cynRed text-white`
+- Nested category accordion; `sidebar_suffix` for mobile modal IDs
+
+## JS
+
+- `accordion.js` — sidebar accordions
+- `modals.js` — mobile filter modal
+- `blogArchiveSort.js` — mobile sort `<select data-blog-archive-sort>`
+
+## Cards
+
+`Templates::getCard('blog', ['layout' => 'horizontal', 'responsive' => true, 'fixed' => true])`

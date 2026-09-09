@@ -1,0 +1,54 @@
+---
+description: Prefer Tailwind inline classes over custom CSS in style.css
+alwaysApply: true
+---
+
+# Tailwind inline first
+
+Put styles on the element with Tailwind utility classes in PHP/HTML templates. Do **not** add rules to `assets/css/style.css` when the same result can be achieved inline.
+
+## Do
+
+```html
+<div
+  class="flex flex-col gap-3 rounded-3xl border border-cynBorderHover/40 bg-cynBgItem p-4"
+>
+  ...
+</div>
+<p
+  class="text-xs lg:text-base font-light text-cynTextPrimary leading-5 lg:leading-7"
+>
+  ...
+</p>
+```
+
+```php
+<a href="..." class="primary-button btn-have-icon !py-2 !px-3 lg:!px-5">...</a>
+```
+
+## Use style.css only when inline is not enough
+
+- Reusable component classes used in many places (e.g. `.primary-button`, `.blog-archive-tab`)
+- Pseudo-elements (`::before`, `::after`) and complex sibling selectors
+- Animations/transitions that need keyframes or multi-property `transition` blocks
+- Third-party library overrides (Swiper, etc.)
+- State combinations too verbose or impossible as utilities alone
+
+## Don't
+
+```css
+/* ❌ One-off layout/spacing/color that belongs on the element */
+.my-section-title {
+  @apply text-2xl font-bold text-cynTextPrimary;
+}
+```
+
+```html
+<!-- ❌ Extra class just to move inline utilities into CSS -->
+<div class="structure-review-card">...</div>
+```
+
+## Quick check
+
+1. Can this be done with Tailwind classes on the tag? → use inline classes
+2. Is it shared, pseudo-element, or animation-heavy? → `style.css` is OK

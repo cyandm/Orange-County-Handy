@@ -1,0 +1,37 @@
+---
+description: Admin plugin heroes must never contain WP notices/errors
+alwaysApply: true
+---
+
+# Admin notices vs plugin hero
+
+On WordPress admin screens for custom plugins (e.g. WPL / `wp-price-list`), **never place `admin_notices`, errors, or third-party notices inside the hero**.
+
+## Required pattern
+
+1. Open `.wrap` with a screen-reader `<h1>` + `<hr class="wp-header-end" />` **before** the hero so core JS relocates notices above it.
+2. Put plugin toast/notices in a dedicated slot (e.g. `.wpl-notices`) **above** the hero.
+3. Do **not** use a visible `<h1>` inside the hero — use a styled `<p>` / `<div>` for the display title (core moves notices after the first `h1`/`h2` in `.wrap`).
+4. CSS fallback: hide `.notice` / `.e-notice` if they ever land inside the hero.
+
+## Bad
+
+```html
+<header class="wpl-hero">
+  <h1 class="wpl-hero__title">…</h1>
+  <!-- WP injects Elementor/theme notices here -->
+</header>
+```
+
+## Good
+
+```html
+<div class="wrap wpl-app">
+  <h1 class="screen-reader-text">…</h1>
+  <hr class="wp-header-end" />
+  <div class="wpl-notices">…</div>
+  <header class="wpl-hero">
+    <p class="wpl-hero__title">…</p>
+  </header>
+</div>
+```

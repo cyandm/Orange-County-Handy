@@ -1,0 +1,46 @@
+---
+description: Use article only for blog content; div or a elsewhere
+alwaysApply: true
+---
+
+# Semantic HTML — article, div, a
+
+Use `<article>` **only** for blog-related content: post cards, single post body, blog archive items, and other standalone blog entries.
+
+Everywhere else, use `<div>`. If the block is clickable or navigates somewhere, wrap it in `<a>` instead of `<div>`.
+
+## Do
+
+```html
+<!-- Blog post card -->
+<article class="blog-card">...</article>
+
+<!-- Single post content -->
+<article class="single-post-content">...</article>
+
+<!-- Non-blog card (no link) -->
+<div class="flex flex-col rounded-3xl border ...">...</div>
+
+<!-- Clickable card -->
+<a
+  href="<?php echo esc_url($url); ?>"
+  class="flex flex-col rounded-3xl border ..."
+  >...</a
+>
+```
+
+## Don't
+
+```html
+<!-- ❌ article for non-blog UI (steps, features, team, etc.) -->
+<article class="structure-session-step">...</article>
+
+<!-- ❌ div when the whole block is a link -->
+<div onclick="location.href='...'">...</div>
+```
+
+## Quick check
+
+- Blog post or blog listing item → `<article>`
+- Static UI block, step, feature, team member, certificate → `<div>`
+- Entire block is a link → `<a>`

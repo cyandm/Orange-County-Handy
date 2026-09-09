@@ -1,0 +1,46 @@
+---
+description: Compact single-line coding style — mandatory for all orange-county-handy theme PHP/HTML
+alwaysApply: true
+---
+
+# Compact coding style (mandatory)
+
+این قانون همیشه باید رعایت شود. کد کوتاه را چندخطی ننویس.
+
+Prefer single-line statements over multi-line splits for short calls, arrays of few keys, ternaries, HTML tags with several attributes, and helper/register calls.
+
+## Do
+
+```php
+<?php the_post_thumbnail('full', ['class' => 'w-full h-auto object-cover rounded-3xl', 'alt' => esc_attr(get_the_title())]); ?>
+<?php echo $title ? esc_html($title) : __('Fallback', 'orange-county-handy'); ?>
+$acfGroup->basicFields->addText('field', 'Label', ['default_value' => $x, 'width' => '40']);
+self::makePostType('product', 'Product', 'Products', 'dashicons-cart', ['title', 'editor', 'thumbnail']);
+self::makePostType('activity', 'Activity', 'Activities', 'dashicons-building', ['title', 'thumbnail', 'page-attributes'], false, false, false);
+```
+
+```html
+<swiper-container class="w-full" slides-per-view="1" space-between="12" loop="true" pagination="false" navigation="true" navigation-next-el="#next" navigation-prev-el="#prev">
+<a href="<?php echo esc_url($btn['url']); ?>" <?php echo !empty($btn['target']) ? 'target="' . esc_attr($btn['target']) . '"' : ''; ?> class="primary-button">
+```
+
+## Don't
+
+```php
+// ❌ BAD — short call split across lines
+self::makePostType(
+	'product',
+	'Product',
+	'Products',
+	'dashicons-cart',
+	['title', 'editor', 'thumbnail']
+);
+```
+
+- Split short attribute lists across lines
+- Break ternaries across lines when they fit on one line
+- Break ACF helper args, `makePostType`, or small associative arrays across lines when they have only a few keys
+
+Long content strings or large data arrays may stay multi-line when readability clearly requires it.
+
+Exception: when an HTML tag’s **content** is a PHP print (text or `Icon::print`), wrap it in three lines — see `php-tag-content.mdc`. Do not put `<?php ... ?>` on the same line as `<span>` / `<i>` / etc.

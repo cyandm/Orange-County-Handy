@@ -1,0 +1,39 @@
+---
+description: i18n-ready theme — translatable strings + logical CSS for future locales
+alwaysApply: true
+---
+
+# Internationalization (i18n)
+
+Site UI is English today, but code must stay ready for more languages (including possible RTL later). Do **not** build a separate RTL stylesheet or `rtl-` variants now.
+
+## Strings
+
+- Wrap all user-facing theme strings with `__()` / `esc_html__()` / `esc_html_e()` / `esc_attr__()` and text domain `orange-county-handy`.
+- No hardcoded English in templates for labels, buttons, empty states, aria-labels, etc.
+- Dynamic content from CMS/ACF still goes through `esc_html()` / `esc_url()` as usual.
+
+```php
+<?php esc_html_e('Get a quote', 'orange-county-handy'); ?>
+<?php echo esc_html(sprintf(__('Hello, %s', 'orange-county-handy'), $name)); ?>
+```
+
+## Spacing & alignment — logical properties
+
+Prefer direction-agnostic Tailwind utilities so layout can flip with `dir` later:
+
+| Prefer | Avoid (when mirroring matters) |
+|--------|--------------------------------|
+| `ms-*` / `me-*` | `ml-*` / `mr-*` |
+| `ps-*` / `pe-*` | `pl-*` / `pr-*` |
+| `text-start` / `text-end` | `text-left` / `text-right` |
+| `start-*` / `end-*` | `left-*` / `right-*` |
+| `border-s-*` / `border-e-*` | `border-l-*` / `border-r-*` |
+
+`mx-*`, `px-*`, `gap-*`, `justify-between`, and centered layouts are fine as-is.
+
+## Do not
+
+- Hardcode `dir="ltr"` on wrappers (let WordPress / `language_attributes()` own document direction)
+- Ship mirrored duplicate markup or `rtl:`-only forks “just in case”
+- Translate CMS/ACF field *values* in PHP — those belong in multilingual plugins later

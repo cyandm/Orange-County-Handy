@@ -1,0 +1,49 @@
+---
+description: Wrap PHP text/icon output in HTML tags as three clean lines — open, PHP, close
+alwaysApply: true
+---
+
+# PHP inside HTML tags (three lines)
+
+When a tag’s content is a PHP print (text, icon, etc.), do **not** put PHP on the same line as the tag. Open the tag, then PHP on the next line, then close the tag.
+
+The opening tag itself stays **one line** (attributes stay inline).
+
+## Do
+
+```html
+<span class="text-sm md:text-base font-normal text-cynTextPrimary leading-6">
+    <?php esc_html_e('Optional features', 'orange-county-handy'); ?>
+</span>
+```
+
+```html
+<i class="size-6 flex items-center justify-center [&_svg]:size-full [&_svg]:stroke-[1.5]">
+    <?php Icon::print('Arrow-27'); ?>
+</i>
+```
+
+```html
+<span>
+    <?php echo esc_html($feature['title']); ?>
+</span>
+```
+
+## Don't
+
+```html
+<!-- ❌ PHP jammed on the same line as the tag -->
+<span class="text-sm"><?php esc_html_e('Optional features', 'orange-county-handy'); ?></span>
+<i class="size-6"><?php Icon::print('Arrow-27'); ?></i>
+```
+
+## Applies when
+
+- Text: `esc_html_e`, `echo esc_html(...)`, `the_title()`, etc. as the tag’s only content
+- Icons: `Icon::print(...)` inside `<i>` (or similar)
+
+## Does not apply
+
+- PHP in **attributes** stays inline: `href="<?php echo esc_url($url); ?>"`
+- Short self-contained PHP calls that are not wrapping tag content
+- Opening-tag attributes — keep those on one line (compact style)

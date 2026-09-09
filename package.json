@@ -1,0 +1,51 @@
+{
+  "name": "cyanthemesetup",
+  "version": "0.0.0",
+  "description": "A custom WordPress theme designed to provide a flexible and easy-to-use framework for developers.",
+  "main": "index.php",
+  "scripts": {
+    "watch:css": "npx @tailwindcss/cli -i ./assets/css/style.css -o ./assets/css/dist/cyn-theme-style.css --watch",
+    "watch:js": "esbuild ./assets/js/index.js --outfile=./assets/js/dist/cyn-theme-script.bundle.js --target=es2020 --bundle --watch",
+    "watch": "concurrently \"npm run watch:css\" \"npm run watch:js\"",
+    "start": "npm run watch",
+    "build:css": "npx @tailwindcss/cli -i ./assets/css/style.css -o ./assets/css/dist/cyn-theme-style.min.css --minify",
+    "build:js": "esbuild ./assets/js/index.js --outfile=./assets/js/dist/cyn-theme-script.bundle.min.js --target=es2020 --bundle --minify --sourcemap",
+    "build": "npm run build:css && npm run build:js"
+  },
+  "author": "Cyan Dm",
+  "license": "GPL-2.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cyandm/theme-setup-main.git"
+  },
+  "homepage": "https://cyandm.com",
+  "bugs": {
+    "url": "https://github.com/cyandm/theme-setup-main/issues"
+  },
+  "devDependencies": {
+    "@tailwindcss/aspect-ratio": "^0.4.2",
+    "@tailwindcss/forms": "^0.5.8",
+    "@tailwindcss/typography": "^0.5.15",
+    "concurrently": "^9.1.0",
+    "esbuild": "^0.28.1",
+    "tailwindcss": "^4.0.9"
+  },
+  "dependencies": {
+    "@fancyapps/ui": "^6.1.10",
+    "@tailwindcss/cli": "^4.0.9",
+    "@tailwindcss/oxide": "^4.0.6",
+    "htmx.org": "^2.0.8",
+    "photoswipe": "^5.4.4",
+    "plyr": "^3.8.4",
+    "swiper": "^12.1.2"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 version"
+  ],
+  "keywords": [
+    "wordpress",
+    "theme",
+    "custom"
+  ]
+}

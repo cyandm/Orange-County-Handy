@@ -1,0 +1,73 @@
+---
+description: Tailwind UI — height, DOM order, transitions, text/radius scale
+alwaysApply: true
+---
+
+# Tailwind UI conventions
+
+## Height
+
+Do not set `h-*`, `min-h-*`, or fixed height on blocks that already have padding + text/content. Content defines height naturally.
+
+Use explicit height only when the element has no text flow (e.g. image wrapper: `w-full h-64 sm:h-72` + `object-cover` on the img — no `aspect-*` or arbitrary ratio px).
+
+```html
+<!-- ❌ BAD — fixed height on a padded text row -->
+<div class="flex items-center justify-between h-8 rounded-lg px-3 py-1">...</div>
+
+<!-- ✅ GOOD -->
+<div class="flex items-center justify-between rounded-lg px-3 py-1">...</div>
+```
+
+## DOM order — no `order-*`
+
+Do **not** use `order-*`, `order-first`, `order-last`, or `flex-col-reverse` / `flex-row-reverse` to reshuffle layout.
+
+Put elements in the DOM in the visual order you want. Change structure, not `order`.
+
+```html
+<!-- ❌ -->
+<div class="flex flex-col lg:flex-row">
+  <div class="order-1 lg:order-2">...</div>
+  <div class="order-2 lg:order-1">...</div>
+</div>
+
+<!-- ✅ -->
+<div class="flex flex-col lg:flex-row">
+  <div>first in DOM</div>
+  <div>second in DOM</div>
+</div>
+```
+
+Default block/inline flow and `justify-between` are enough for most cards. Avoid extra alignment utilities unless the design requires them.
+
+## Transitions
+
+Prefer `transition-all duration-300` — not `transition-colors` alone.
+
+```html
+<a class="group ... transition-all duration-300">
+```
+
+## Text size — Tailwind scale, not arbitrary px
+
+| Figma (approx.) | Use |
+|-----------------|-----|
+| ~11px | `text-xs` |
+| ~13–14px | `text-sm` |
+| ~16px | `text-base` |
+
+Avoid `text-[13px]` etc. unless no close match or a one-off design exception.
+
+## Border radius — nearest Tailwind step upward
+
+| Figma (approx.) | Use |
+|-----------------|-----|
+| ~4px | `rounded-sm` |
+| ~8px | `rounded-lg` |
+| ~12px | `rounded-xl` |
+| ~16px | `rounded-2xl` |
+| ~20–24px | `rounded-3xl` |
+| ~28–32px | `rounded-4xl` |
+
+Avoid `rounded-[20px]` etc. unless no close match or a one-off exception.

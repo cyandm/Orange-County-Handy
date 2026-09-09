@@ -1,0 +1,23 @@
+---
+description: Blog category tabs pagination (server-side + tab URL state)
+globs:
+  - templates/blog.php
+  - partials/parts/blog/**
+  - assets/js/functions/blogCategoryTabs.js
+---
+
+# Blog category pagination
+
+## Query params
+- `blog_tab` — active category slug or `all`
+- `blog_paged` — page number (1-based)
+
+## Files
+- `partials/parts/blog/pagination.php` — circular nav (prev/next `cynRed`, current `cynBlack`)
+- `templates/blog.php` — `WP_Query` per tab, cards loop + pagination inline in tab panels
+
+## Tab JS
+`blogCategoryTabs.js` updates `blog_tab` via `history.replaceState` and clears `blog_paged` on tab switch.
+
+## Pagination links
+Include `#blog-categories` anchor for scroll after page load.
