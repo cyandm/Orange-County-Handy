@@ -209,6 +209,24 @@ a {
   @apply inline-flex items-center gap-2 !ps-2;
 }
 
+/*-------submit button loading state (htmx .is-loading)---------*/
+.submit-form-btn.is-loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.submit-form-btn .submit-form-btn__loading {
+  display: none;
+}
+
+.submit-form-btn.is-loading .submit-form-btn__idle {
+  display: none;
+}
+
+.submit-form-btn.is-loading .submit-form-btn__loading {
+  display: inline-flex;
+}
+
 /*-------loading-dots: . .. ... ..---------*/
 .loading-dots span {
   animation: loading-dots-second 1.6s steps(1, end) infinite;

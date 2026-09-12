@@ -8,6 +8,7 @@
 use Cyan\Theme\Helpers\Templates;
 
 /* htmx load more request, return only the new cards and the refreshed button */
+
 if (! empty($_SERVER['HTTP_HX_REQUEST'])) {
 
 	while (have_posts()) : the_post();
@@ -27,10 +28,10 @@ $subtitle = get_option('reviews_archive_subtitle');
 
 <?php Templates::getPart('breadcrumb'); ?>
 
-<main id="reviews-archive" class="flex flex-col gap-6 pb-10 lg:pb-16">
+<main id="reviews-archive" class="flex flex-col gap-3 md:gap-6">
 
 	<div class="container flex flex-col items-center gap-0.5 text-center lg:gap-2">
-		<h1 class="text-2xl lg:text-4xl font-semibold text-cynTextBlack">
+		<h1 class="text-xl lg:text-3xl font-extrabold capitalize text-cynTextBlack">
 			<?php echo esc_html($title); ?>
 		</h1>
 		<?php if ($subtitle) : ?>
@@ -44,7 +45,7 @@ $subtitle = get_option('reviews_archive_subtitle');
 
 	<?php if (have_posts()) : ?>
 
-		<div class="container">
+		<div class="container max-md:mt-3">
 			<div id="reviews-grid" class="columns-2 gap-3 lg:columns-4">
 				<?php while (have_posts()) : the_post(); ?>
 					<?php Templates::getCard('review'); ?>

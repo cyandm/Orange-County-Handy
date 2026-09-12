@@ -20,7 +20,7 @@ $thumbtack_hires = get_option('reviews_thumbtack_hires');
 
 $stats = [];
 
-if ($average) $stats[] = ['icon' => 'Star', 'value' => $average . '/5', 'label' => __('Average Rating', 'orange-county-handy'), 'rating' => $average];
+if ($average) $stats[] = ['icon' => 'Star', 'value' => $average, 'suffix' => '/5', 'label' => __('Average Rating', 'orange-county-handy'), 'rating' => $average];
 if ($total) $stats[] = ['icon' => 'Messages,-Chat', 'value' => number_format_i18n($total), 'label' => __('Happy customers all around orange county', 'orange-county-handy')];
 if ($satisfaction) $stats[] = ['icon' => 'Thumbs-up,-Like', 'value' => $satisfaction . '%', 'label' => __('customer satisfaction rate', 'orange-county-handy')];
 if ($thumbtack_hires) $stats[] = ['icon' => 'Medal,-Prize,-Reward', 'value' => '+' . $thumbtack_hires, 'label' => __('Hires on Thumbtack', 'orange-county-handy')];
@@ -38,10 +38,17 @@ if (! $stats) return;
 						<?php Icon::print($stat['icon']); ?>
 					</i>
 					<div class="flex flex-col">
-						<span class="text-xl font-medium text-cynTextBlack">
-							<?php echo esc_html($stat['value']); ?>
-						</span>
-						<?php if (! empty($stat['rating'])) Templates::getPart('rating-stars', ['rating' => $stat['rating'], 'size' => 'size-3.5']); ?>
+						<div class="flex items-baseline">
+							<span class="text-xl font-semibold text-cynTextBlack">
+								<?php echo esc_html($stat['value']); ?>
+							</span>
+							<?php if (! empty($stat['suffix'])) : ?>
+								<span class="text-xs font-semibold text-cynTextGray">
+									<?php echo esc_html($stat['suffix']); ?>
+								</span>
+							<?php endif; ?>
+						</div>
+						<?php if (! empty($stat['rating'])) Templates::getPart('rating-stars', ['rating' => $stat['rating'], 'size' => 'size-3']); ?>
 						<span class="text-xs font-normal text-cynTextGray">
 							<?php echo esc_html($stat['label']); ?>
 						</span>
@@ -56,8 +63,8 @@ if (! $stats) return;
 			<?php foreach ($stats as $stat) : ?>
 				<div class="flex shrink-0 items-center gap-1">
 					<span class="size-2.5 shrink-0 rounded-full bg-cynYellow" aria-hidden="true"></span>
-					<span class="text-xs font-normal whitespace-nowrap text-cynTextBlack">
-						<?php echo esc_html($stat['value'] . ' ' . $stat['label']); ?>
+					<span class="text-xs font-semibold whitespace-nowrap text-cynTextBlack">
+						<?php echo esc_html($stat['value'] . ($stat['suffix'] ?? '') . ' ' . $stat['label']); ?>
 					</span>
 				</div>
 			<?php endforeach; ?>

@@ -1,5 +1,5 @@
 ---
-description: Tailwind UI — height, DOM order, transitions, text/radius scale
+description: Tailwind UI — height, DOM order, transitions, exact Figma text size, radius scale
 alwaysApply: true
 ---
 
@@ -49,15 +49,36 @@ Prefer `transition-all duration-300` — not `transition-colors` alone.
 <a class="group ... transition-all duration-300">
 ```
 
-## Text size — Tailwind scale, not arbitrary px
+## Text size — always the exact Figma value
 
-| Figma (approx.) | Use |
-|-----------------|-----|
-| ~11px | `text-xs` |
-| ~13–14px | `text-sm` |
-| ~16px | `text-base` |
+Never round a font size. Whatever px Figma says, that is the px the browser must render.
 
-Avoid `text-[13px]` etc. unless no close match or a one-off design exception.
+Use the Tailwind token **only when it equals the Figma value exactly**; otherwise use an arbitrary value.
+
+| Figma | Use |
+|-------|-----|
+| 12px | `text-xs` |
+| 14px | `text-sm` |
+| 16px | `text-base` |
+| 18px | `text-lg` |
+| 20px | `text-xl` |
+| 24px | `text-2xl` |
+| 30px | `text-3xl` |
+| 36px | `text-4xl` |
+| any other size (11px, 13px, 15px, 22px …) | `text-[11px]`, `text-[13px]`, `text-[15px]`, `text-[22px]` |
+
+```html
+<!-- ❌ BAD — Figma says 13px, rounded to the nearest token -->
+<span class="text-sm">...</span>
+
+<!-- ✅ GOOD — Figma says 13px -->
+<span class="text-[13px]">...</span>
+
+<!-- ✅ GOOD — Figma says 14px, the token is exact -->
+<span class="text-sm">...</span>
+```
+
+Same for responsive values: take the desktop size from the desktop frame and the mobile size from the mobile frame, each exact (`text-[13px] lg:text-base`).
 
 ## Border radius — nearest Tailwind step upward
 

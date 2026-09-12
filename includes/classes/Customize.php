@@ -118,6 +118,7 @@ class Customize {
 		self::$wpCustomize->add_section('address_section', ['title' => 'Contact Info', 'priority' => 1, 'panel' => 'information']);
 		self::$wpCustomize->add_section('logo_section', ['title' => 'Other Logos', 'priority' => 1, 'panel' => 'information']);
 		self::$wpCustomize->add_section('reviews_section', ['title' => 'Reviews Archive', 'priority' => 1, 'panel' => 'information']);
+		self::$wpCustomize->add_section('blog_section', ['title' => 'Blog Archive', 'priority' => 1, 'panel' => 'information']);
 
 		self::addControl('social_section', 'text', 'instagram_link', 'Instagram URL');
 		self::addControl('social_section', 'text', 'whatsapp_number', 'WhatsApp Link');
@@ -128,7 +129,9 @@ class Customize {
 		self::addControl('address_section', 'text', 'phone_number', 'Phone Number');
 		self::addControl('address_section', 'text', 'phone_number_support', 'Support Phone Number');
 		self::addControl('address_section', 'text', 'email_address', 'Email');
+		self::addControl('address_section', 'text', 'receiver_form_email', 'Forms Recipient', 'Contact and quote form submissions are sent here, falls back to the Email above');
 		self::addControl('address_section', 'text', 'service_areas', 'Service Areas');
+		self::addControl('address_section', 'text', 'work_hours', 'Work Hours', 'e.g. Mon - Sat: 7:00 AM - 7:00 PM');
 		self::addControl('address_section', 'text', 'copyright_text', 'Copyright Text');
 
 		self::addControl('logo_section', 'file', 'logo_mobile_menu', 'Mobile Menu Logo');
@@ -137,5 +140,7 @@ class Customize {
 		self::addControl('reviews_section', 'text', 'reviews_archive_title', 'Archive Title');
 		self::addControl('reviews_section', 'text', 'reviews_archive_subtitle', 'Archive Subtitle');
 		self::addControl('reviews_section', 'text', 'reviews_thumbtack_hires', 'Hires on Thumbtack', 'Entered manually, e.g. 231+');
+
+		self::addControl('blog_section', 'text', 'blog_archive_title', 'Archive Title', 'Shown on the blog archive, category and tag pages use the term name');
 	}
 }

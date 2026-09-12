@@ -14,12 +14,16 @@ class Meta
      */
     protected static $unread_badge_config = [
         'contact_form' => ['read_meta' => '_read'],
+        'quote_form' => ['read_meta' => '_read'],
         'order_form' => ['read_meta' => '_read'],
     ];
 
     public static function init()
     {
         add_action('add_meta_boxes', [__CLASS__, 'add_form_meta_box']);
+        add_action('add_meta_boxes', [__CLASS__, 'add_quote_form_meta_box']);
+        add_filter('manage_quote_form_posts_columns', [__CLASS__, 'quote_form_table_head']);
+        add_action('manage_quote_form_posts_custom_column', [__CLASS__, 'quote_form_table_column'], 10, 2);
         add_action('add_meta_boxes', [__CLASS__, 'add_order_form_meta_box']);
         add_filter('manage_contact_form_posts_columns', [__CLASS__, 'form_table_head']);
         add_action('manage_contact_form_posts_custom_column', [__CLASS__, 'form_table_column'], 10, 2);
@@ -39,28 +43,13 @@ class Meta
             return;
 
 
-        add_meta_box('form_information', 'اطلاعات فرم', function () {
+        add_meta_box('form_information', __('Form Information', 'orange-county-handy'), function () {
             $meta_group = [
-
-                [
-                    'name' => '_name',
-                    'label' => 'نام:',
-                ],
-
-                [
-                    'name' => '_email',
-                    'label' => 'ایمیل:',
-                ],
-
-                [
-                    'name' => '_phone',
-                    'label' => 'تلفن همراه:',
-                ],
-
-                [
-                    'name' => '_message',
-                    'label' => 'سوال:',
-                ],
+                ['name' => '_name', 'label' => __('Name:', 'orange-county-handy')],
+                ['name' => '_email', 'label' => __('Email:', 'orange-county-handy')],
+                ['name' => '_phone', 'label' => __('Phone:', 'orange-county-handy')],
+                ['name' => '_subject', 'label' => __('Subject:', 'orange-county-handy')],
+                ['name' => '_message', 'label' => __('Message:', 'orange-county-handy')],
             ];
 
             include get_template_directory() . '/partials/parts/metabox.php';
@@ -69,30 +58,62 @@ class Meta
 
     public static function form_table_head($columns)
     {
-        $columns['name'] = __('نام', 'cyn-dm');
-        $columns['phone'] = __('تلفن همراه', 'cyn-dm');
-        $columns['email'] = __('ایمیل', 'cyn-dm');
-        $columns['message'] = __('سوال', 'cyn-dm');
+        $columns['name'] = __('Name', 'orange-county-handy');
+        $columns['phone'] = __('Phone', 'orange-county-handy');
+        $columns['email'] = __('Email', 'orange-county-handy');
+        $columns['subject'] = __('Subject', 'orange-county-handy');
+        $columns['message'] = __('Message', 'orange-county-handy');
         return $columns;
     }
 
     public static function form_table_column($column_name, $post_id)
     {
-        if ($column_name == 'name') {
+        if (in_array($column_name, ['name', 'phone', 'email', 'subject', 'message'], true)) {
+            echo esc_html(get_post_meta($post_id, '_' . $column_name, true));
+        }
+    }
 
-            echo get_post_meta($post_id, '_name', true);
+    public static function add_quote_form_meta_box()
+    {
+        global $post;
+        if ($post->post_type !== 'quote_form') {
+            return;
         }
 
-        if ($column_name == 'phone') {
-            echo get_post_meta($post_id, '_phone', true);
-        }
+        add_meta_box('quote_form_information', __('Quote Request', 'orange-county-handy'), function () {
+            $meta_group = [
+                ['name' => '_service', 'label' => __('Service:', 'orange-county-handy')],
+                ['name' => '_zip', 'label' => __('Zip Code:', 'orange-county-handy')],
+                ['name' => '_property_type', 'label' => __('Property Type:', 'orange-county-handy')],
+                ['name' => '_description', 'label' => __('Project:', 'orange-county-handy')],
+                ['name' => '_timeframe', 'label' => __('Timeframe:', 'orange-county-handy')],
+                ['name' => '_preferred_date', 'label' => __('Preferred Date:', 'orange-county-handy')],
+                ['name' => '_notes', 'label' => __('Scheduling Notes:', 'orange-county-handy')],
+                ['name' => '_name', 'label' => __('Name:', 'orange-county-handy')],
+                ['name' => '_email', 'label' => __('Email:', 'orange-county-handy')],
+                ['name' => '_phone', 'label' => __('Phone:', 'orange-county-handy')],
+                ['name' => '_contact_method', 'label' => __('Preferred Contact:', 'orange-county-handy')],
+            ];
 
-        if ($column_name == 'email') {
-            echo get_post_meta($post_id, '_email', true);
-        }
+            include get_template_directory() . '/partials/parts/metabox.php';
+            include get_template_directory() . '/partials/parts/metabox-photos.php';
+        }, null, 'advanced', 'high');
+    }
 
-        if ($column_name == 'message') {
-            echo get_post_meta($post_id, '_message', true);
+    public static function quote_form_table_head($columns)
+    {
+        $columns['name'] = __('Name', 'orange-county-handy');
+        $columns['service'] = __('Service', 'orange-county-handy');
+        $columns['phone'] = __('Phone', 'orange-county-handy');
+        $columns['email'] = __('Email', 'orange-county-handy');
+        $columns['timeframe'] = __('Timeframe', 'orange-county-handy');
+        return $columns;
+    }
+
+    public static function quote_form_table_column($column_name, $post_id)
+    {
+        if (in_array($column_name, ['name', 'service', 'phone', 'email', 'timeframe'], true)) {
+            echo esc_html(get_post_meta($post_id, '_' . $column_name, true));
         }
     }
 

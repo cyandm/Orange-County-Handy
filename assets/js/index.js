@@ -15,6 +15,7 @@ import { shareBtn } from "./functions/shareBtn";
 import { Accordion } from "./functions/accordion";
 import { SearchPage } from "./functions/search";
 import { Marquee } from "./functions/marquee";
+import { QuoteForm } from "./functions/quoteForm";
 
 Modals();
 register();
@@ -29,3 +30,4 @@ shareBtn();
 Accordion();
 SearchPage();
 Marquee();
+QuoteForm();

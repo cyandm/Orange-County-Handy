@@ -22,7 +22,9 @@ class Register
 		add_filter('nav_menu_css_class', [__CLASS__, 'addMenuClasses'], 10, 4);
 
 		add_action('template_redirect', [__CLASS__, 'redirectSingleReview']);
+		add_action('template_redirect', [__CLASS__, 'redirectReviewsSlug']);
 		add_action('pre_get_posts', [__CLASS__, 'setReviewArchiveQuery']);
+		add_action('pre_get_posts', [__CLASS__, 'setBlogArchiveQuery']);
 	}
 
 	/**
@@ -38,6 +40,24 @@ class Register
 	}
 
 	/**
+	 * /reviews is the plural people guess, the archive itself lives on /review
+	 * @return void
+	 */
+	public static function redirectReviewsSlug()
+	{
+		if (! is_404()) return;
+
+		$path = trim((string) wp_parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
+		$home = trim((string) wp_parse_url(home_url(), PHP_URL_PATH), '/');
+
+		if ($home && str_starts_with($path, $home)) $path = trim(substr($path, strlen($home)), '/');
+		if ($path !== 'reviews' && ! str_starts_with($path, 'reviews/')) return;
+
+		wp_safe_redirect(home_url('/review' . substr($path, strlen('reviews')) . '/'), 301);
+		exit;
+	}
+
+	/**
 	 * @param \WP_Query $query
 	 * @return void
 	 */
@@ -46,6 +66,19 @@ class Register
 		if (is_admin() || ! $query->is_main_query() || ! $query->is_post_type_archive('review')) return;
 
 		$query->set('posts_per_page', 12);
+	}
+
+	/**
+	 * the blog grid is three by three
+	 * @param \WP_Query $query
+	 * @return void
+	 */
+	public static function setBlogArchiveQuery($query)
+	{
+		if (is_admin() || ! $query->is_main_query()) return;
+		if (! $query->is_home() && ! $query->is_category() && ! $query->is_tag()) return;
+
+		$query->set('posts_per_page', 9);
 	}
 
 	/**
@@ -87,8 +120,10 @@ class Register
 	public static function registerPostType()
 	{
 		self::makePostType('contact_form', 'Contact Form', 'Contact Form', 'dashicons-phone', ['title']);
+		self::makePostType('quote_form', 'Quote Request', 'Quote Requests', 'dashicons-clipboard', ['title'], false, false, false);
 		self::makePostType('faq', 'FAQ', 'FAQ', 'dashicons-editor-help', ['title', 'editor']);
 		self::makePostType('review', 'Review', 'Reviews', 'dashicons-admin-comments', ['title', 'editor']);
+		self::makePostType('service', 'Service', 'Services', 'dashicons-hammer', ['title', 'editor', 'thumbnail', 'page-attributes']);
 	}
 
 	public static function registerTaxonomy()
@@ -123,7 +158,7 @@ class Register
 	private static function makePostType($slug, $singular_name, $plural_name, $icon, $supports = ['title', 'thumbnail'], $search_include = true, $has_single = true, $has_archive = true)
 	{
 		$labels = [
-			'name' => $singular_name,
+			'name' => $plural_name,
 			'singular_name' => $singular_name,
 			'menu_name' => $plural_name,
 			'name_admin_bar' => $singular_name,

@@ -2,147 +2,131 @@
 
 /**
  * The template for displaying single blog posts
- * 
+ *
  * @link https://developer.wordpress.org/themes/basics/template-hierarchy/#single-post
  * @package CyanTheme
  */
 
-use Cyan\Theme\Helpers\Templates;
 use Cyan\Theme\Helpers\Icon;
+use Cyan\Theme\Helpers\Templates;
 
-$current_post_id = get_the_ID();
-$categories = get_the_category();
-$tags = get_the_tags();
+the_post();
 
-$related_args = [
-    'post_type' => 'post',
-    'posts_per_page' => 12,
-    'post__not_in' => [$current_post_id],
-];
+$category = get_the_category()[0] ?? null;
+$read_time = max(1, (int) ceil(str_word_count(wp_strip_all_tags(get_the_content())) / 200));
+/* hand picked first, otherwise the FAQs placed on the blog and the newest services */
+$faq_ids = array_filter((array) get_field('post_faqs'));
+if (! $faq_ids) $faq_ids = get_posts(['post_type' => 'faq', 'posts_per_page' => -1, 'fields' => 'ids', 'orderby' => 'menu_order title', 'order' => 'ASC', 'tax_query' => [['taxonomy' => 'faq_place', 'field' => 'slug', 'terms' => 'single-blog']]]);
 
-if (!empty($categories)) {
-    $related_args['category__in'] = wp_list_pluck($categories, 'term_id');
-} elseif ($tags && !empty($tags)) {
-    $related_args['tag__in'] = wp_list_pluck(array_values($tags), 'term_id');
-}
+$service_ids = array_filter((array) get_field('related_services'));
+if (! $service_ids) $service_ids = get_posts(['post_type' => 'service', 'posts_per_page' => 3, 'fields' => 'ids']);
 
-$related_posts_query = new WP_Query($related_args);
+/* headings become anchors so the sidebar can jump to them */
+$toc = [];
+$content = preg_replace_callback('/<h2([^>]*)>(.*?)<\/h2>/is', function ($heading) use (&$toc) {
+	$id = 'section-' . (count($toc) + 1);
+	$toc[] = ['id' => $id, 'title' => wp_strip_all_tags($heading[2])];
+
+	return '<h2 id="' . esc_attr($id) . '"' . preg_replace('/\s*id=("|\')[^"\']*\1/i', '', $heading[1]) . '>' . $heading[2] . '</h2>';
+}, apply_filters('the_content', get_the_content()));
+
+if ($faq_ids) $toc[] = ['id' => 'post-faqs', 'title' => __('FAQs', 'orange-county-handy')];
+
+$related_args = ['post_type' => 'post', 'posts_per_page' => 5, 'post__not_in' => [get_the_ID()], 'ignore_sticky_posts' => true];
+if ($category) $related_args['category__in'] = [$category->term_id];
+
+$related_posts = new WP_Query($related_args);
 
 get_header(); ?>
 
 <?php Templates::getPart('breadcrumb'); ?>
 
-<main class="single-post">
+<main id="single-post">
 
-    <?php if (have_posts()) : while (have_posts()) : the_post(); ?>
+	<div class="container flex flex-col gap-11 lg:grid lg:grid-cols-[minmax(0,1fr)_384px] lg:grid-rows-[auto_auto_auto_1fr] lg:items-start lg:gap-3">
 
-            <section class="container flex flex-col gap-2 mb-5">
+		<div class="lg:col-start-2 lg:row-start-1">
+			<?php Templates::getPart('post-toc', ['items' => $toc]); ?>
+		</div>
 
-                <div class="text-cynBlack/50 text-xs font-medium flex gap-2 items-center"><?php the_category('|'); ?></div>
+		<article class="flex flex-col gap-5 lg:col-start-1 lg:row-start-1 lg:row-span-4">
 
-                <h1 class="text-3xl text-cynBlack leading-11"><?php the_title(); ?></h1>
+			<div class="flex flex-col gap-3 lg:gap-6">
 
-                <img src="<?= get_template_directory_uri(); ?>/assets/image/zigzag.svg" alt="zigzag" class="w-32">
+				<div class="flex flex-col gap-5 lg:max-w-[498px]">
 
-                <div class="flex gap-4 items-center mt-2">
+					<div class="flex flex-col gap-2">
 
-                    <div class="flex flex-row gap-1 items-center justify-center">
+						<?php if ($category) : ?>
+							<span class="w-fit rounded-lg bg-cynYellowLight/30 px-2.5 py-1 text-[10px] font-semibold text-cynYellow">
+								<?php echo esc_html($category->name); ?>
+							</span>
+						<?php endif; ?>
 
-                        <?= get_avatar('', '', '', '', ['class' => 'size-6 rounded-full']); ?>
-                        <span class="text-cynBlack/50 text-xs font-semibold"><?php the_author(); ?></span>
+						<div class="flex flex-col gap-3">
+							<h1 class="text-xl lg:text-2xl font-bold text-cynTextBlack">
+								<?php the_title(); ?>
+							</h1>
+							<?php if (has_excerpt()) : ?>
+								<p class="text-xs font-medium text-cynTextGray">
+									<?php echo esc_html(get_the_excerpt()); ?>
+								</p>
+							<?php endif; ?>
+						</div>
 
-                    </div>
+					</div>
 
-                    <div class="flex flex-row gap-1 items-center justify-center">
+					<div class="flex items-center gap-5 text-xs font-medium text-cynTextGray">
 
-                        <i class="size-6 text-cynBlack/50">
-                            <?php Icon::print('calendar-schedule-1-1') ?>
-                        </i>
-                        <span class="text-cynBlack/50 text-xs font-semibold"><?= get_the_date(); ?></span>
+						<span class="flex items-center gap-2">
+							<i class="size-4 flex shrink-0 items-center justify-center [&_svg]:size-full" aria-hidden="true">
+								<?php Icon::print('Calendar,-Dates,-Check-in,-Check-out'); ?>
+							</i>
+							<span>
+								<?php echo esc_html(get_the_date()); ?>
+							</span>
+						</span>
 
-                    </div>
+						<span class="flex items-center gap-2">
+							<i class="size-4 flex shrink-0 items-center justify-center [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
+								<?php Icon::print('Alarm,-Clock,-Time,-Timer-3'); ?>
+							</i>
+							<span>
+								<?php echo esc_html(sprintf(__('%d min read', 'orange-county-handy'), $read_time)); ?>
+							</span>
+						</span>
 
-                </div>
+					</div>
 
-                <div class="flex justify-between p-6 rounded-3xl bg-cynWhite border border-cynBlack/10 mt-2 items-center">
+				</div>
 
-                    <div class="flex items-center">
-                        <i class="size-6 text-cynBlack cursor-pointer stroke-[1.5]" id="shareBtn">
-                            <?php Icon::print('Share-2') ?>
-                        </i>
-                    </div>
+				<?php if (has_post_thumbnail()) : ?>
+					<?php the_post_thumbnail('large', ['class' => 'w-full h-32 lg:h-80 rounded-2xl object-cover', 'alt' => esc_attr(get_the_title())]); ?>
+				<?php endif; ?>
 
-                    <div class="flex items-center gap-2">
+			</div>
 
-                        <span class="text-cynBlack text-base font-medium"><?= get_comments_number(); ?></span>
+			<div class="flex flex-col gap-3 [&_a]:text-cynBlue [&_h2]:border-t [&_h2]:border-cynBorder [&_h2]:pt-5 [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-cynTextBlack [&>h2:first-child]:border-t-0 [&>h2:first-child]:pt-0 [&_h3]:text-sm [&_h3]:font-medium [&_h3]:text-cynTextBlack [&_h4]:text-sm [&_h4]:font-medium [&_h4]:text-cynTextBlack [&_p]:text-sm [&_p]:font-medium [&_p]:text-cynTextGray [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:ps-5 [&_ol]:ps-5 [&_li]:text-xs [&_li]:font-medium [&_li]:text-cynTextGray [&_img]:w-full [&_img]:rounded-2xl [&_img]:object-cover [&_blockquote]:rounded-2xl [&_blockquote]:bg-cynBG [&_blockquote]:p-4 [&_blockquote]:text-sm [&_blockquote]:font-medium">
+				<?php echo $content; ?>
+			</div>
 
-                        <i class="size-6 text-cynBlack stroke-[1.5]">
-                            <?php Icon::print('Chat,-Messages,-Bubble-6') ?>
-                        </i>
+			<?php Templates::getPart('post-faqs', ['faqs' => $faq_ids]); ?>
 
-                    </div>
+		</article>
 
-                </div>
-            </section>
+		<?php if ($related_posts->have_posts()) : ?>
+			<div class="lg:col-start-2 lg:row-start-2">
+				<?php Templates::getPart('related-posts', ['query' => $related_posts]); ?>
+			</div>
+		<?php endif; ?>
 
-            <section class="container single-post-content">
+		<?php if ($service_ids) : ?>
+			<div class="lg:col-start-2 lg:row-start-3">
+				<?php Templates::getPart('related-services', ['services' => $service_ids]); ?>
+			</div>
+		<?php endif; ?>
 
-                <div class="w-full">
-                    <?php the_post_thumbnail('full', ['class' => 'w-full h-[320px] md:h-[460px] lg:h-[770px] object-cover object-center']) ?>
-                </div>
-
-                <div class="text-cynBlack [&_a]:text-cynBlue [&_a]:font-normal [&_h2]:text-2xl [&_h2]:my-4 [&_h3]:text-xl [&_h3]:my-4 [&_h4]:text-xl [&_h4]:my-4 [&_p]:text-base [&_p]:font-light [&_p]:leading-8 [&_p]:my-4 [&_img]:w-full [&_img]:max-h-96 [&_img]:object-cover [&_blockquote]:bg-[#E5E5E5] [&_blockquote]:px-2 [&_blockquote]:my-4 [&_blockquote]:text-base [&_blockquote]:font-medium">
-                    <?php the_content(); ?>
-                </div>
-
-            </section>
-
-            <!-- Comments Section -->
-            <?php if (comments_open() || get_comments_number()) : ?>
-                <section class="container comments-section mt-5">
-                    <?php Templates::getPart('comment'); ?>
-                </section>
-            <?php endif; ?>
-
-            <!-- Related Posts Section -->
-            <section class="flex flex-col gap-3 my-14">
-
-                <div class="container">
-                    <p class="text-2xl text-cynBlack leading-11"><?php _e('شاید بپسندید', 'orange-county-handy'); ?></p>
-                </div>
-
-                <?php if ($related_posts_query->have_posts()) : ?>
-                    <div class="relative">
-                        <swiper-container class="w-full" slides-per-view="1.25" centered-slides="true" breakpoints='{ "640":  { "slidesPerView": 2.15 }, "768":  { "slidesPerView": 2.15 }, "1024": { "slidesPerView": 3.25 }, "1280": { "slidesPerView": 4, "centeredSlides": false }}' loop="true" autoplay="true" pagination="false" navigation="true" navigation-next-el="#relatedPostsNext" navigation-prev-el="#relatedPostsPrev">
-                            <?php while ($related_posts_query->have_posts()) : $related_posts_query->the_post(); ?>
-                                <swiper-slide>
-                                    <?php Templates::getCard('blog'); ?>
-                                </swiper-slide>
-                            <?php endwhile; ?>
-                        </swiper-container>
-
-                        <div class="flex justify-between items-center absolute top-1/2 -translate-y-1/2 left-0 right-0 px-4 pointer-events-none z-10">
-
-                            <button id="relatedPostsPrev" class="bg-cynBlack p-1 cursor-pointer rounded-full pointer-events-auto">
-                                <div class="text-white size-7 stroke-[1.5]">
-                                    <?php icon::print('Arrow,-Right') ?>
-                                </div>
-                            </button>
-
-                            <button id="relatedPostsNext" class="bg-cynBlack p-1 cursor-pointer rounded-full pointer-events-auto">
-                                <div class="text-white size-7 stroke-[1.5]">
-                                    <?php icon::print('Left-1') ?>
-                                </div>
-                            </button>
-
-                        </div>
-
-                    <?php endif; ?>
-
-            </section>
-
-    <?php endwhile;
-    endif; ?>
+	</div>
 
 </main>
 
