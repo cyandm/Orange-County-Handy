@@ -63,6 +63,7 @@ class Meta
         $columns['email'] = __('Email', 'orange-county-handy');
         $columns['subject'] = __('Subject', 'orange-county-handy');
         $columns['message'] = __('Message', 'orange-county-handy');
+        $columns['contact_status'] = __('Status', 'orange-county-handy');
         return $columns;
     }
 
@@ -70,6 +71,12 @@ class Meta
     {
         if (in_array($column_name, ['name', 'phone', 'email', 'subject', 'message'], true)) {
             echo esc_html(get_post_meta($post_id, '_' . $column_name, true));
+        }
+
+        if ($column_name === 'contact_status') {
+            $status = get_post_status($post_id);
+            $slug = $status === 'private' ? FormStatuses::defaultStatus('contact_form') : $status;
+            printf('<span class="form-status form-status--%1$s">%2$s</span>', esc_attr($slug), esc_html(FormStatuses::label('contact_form', $status)));
         }
     }
 
@@ -107,6 +114,7 @@ class Meta
         $columns['phone'] = __('Phone', 'orange-county-handy');
         $columns['email'] = __('Email', 'orange-county-handy');
         $columns['timeframe'] = __('Timeframe', 'orange-county-handy');
+        $columns['quote_status'] = __('Status', 'orange-county-handy');
         return $columns;
     }
 
@@ -114,6 +122,12 @@ class Meta
     {
         if (in_array($column_name, ['name', 'service', 'phone', 'email', 'timeframe'], true)) {
             echo esc_html(get_post_meta($post_id, '_' . $column_name, true));
+        }
+
+        if ($column_name === 'quote_status') {
+            $status = get_post_status($post_id);
+            $slug = $status === 'private' ? FormStatuses::defaultStatus('quote_form') : $status;
+            printf('<span class="form-status form-status--%1$s">%2$s</span>', esc_attr($slug), esc_html(FormStatuses::label('quote_form', $status)));
         }
     }
 
@@ -212,6 +226,7 @@ class Meta
         }
         $read_meta = self::$unread_badge_config[$post->post_type]['read_meta'];
         update_post_meta($post_id, $read_meta, '1');
+        FormStatuses::markSeen($post_id);
     }
 
     /**
@@ -223,6 +238,17 @@ class Meta
      */
     public static function getUnreadCount($post_type, $read_meta_key = '_read')
     {
+        if (FormStatuses::config($post_type)) {
+            $query = new \WP_Query([
+                'post_type' => $post_type,
+                'post_status' => [FormStatuses::defaultStatus($post_type), 'private'],
+                'posts_per_page' => -1,
+                'fields' => 'ids',
+                'no_found_rows' => true,
+            ]);
+            return $query->found_posts;
+        }
+
         $query = new \WP_Query([
             'post_type' => $post_type,
             'post_status' => 'any',

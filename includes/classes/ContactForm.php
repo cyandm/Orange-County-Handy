@@ -71,7 +71,7 @@ class ContactForm
 			return self::result(false, __('Please enter a valid phone number.', 'orange-county-handy'), 400);
 		}
 
-		$new_post = wp_insert_post(['post_type' => 'contact_form', 'post_title' => $name, 'post_status' => 'private', 'meta_input' => ['_name' => $name, '_phone' => $phone, '_email' => $email, '_subject' => $subject, '_message' => $message]]);
+		$new_post = wp_insert_post(['post_type' => 'contact_form', 'post_title' => $name, 'post_status' => FormStatuses::defaultStatus('contact_form'), 'meta_input' => ['_name' => $name, '_phone' => $phone, '_email' => $email, '_subject' => $subject, '_message' => $message]]);
 
 		if (is_wp_error($new_post)) {
 			return self::result(false, __('The message could not be sent. Please try again.', 'orange-county-handy'), 500);

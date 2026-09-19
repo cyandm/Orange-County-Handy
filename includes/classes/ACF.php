@@ -25,6 +25,25 @@ class ACF
 
 
 		add_action('acf/include_fields', [__CLASS__, 'registerAllACF']);
+		add_filter('acf/load_field/name=service_icon', [__CLASS__, 'loadServiceIconField']);
+	}
+
+	/**
+	 * Keep only the saved icon in choices; the rest load 10-at-a-time via AJAX
+	 * @param array $field
+	 * @return array
+	 */
+	public static function loadServiceIconField($field)
+	{
+		$value = $field['value'] ?? '';
+		if ($value === '' && ! empty($field['default_value'])) {
+			$value = $field['default_value'];
+		}
+		$field['choices'] = $value ? [$value => $value] : [];
+		$field['ui'] = 1;
+		$field['ajax'] = 1;
+
+		return $field;
 	}
 
 	/**
@@ -36,14 +55,56 @@ class ACF
 		//PostTypes
 		self::forReviews();
 		self::forPosts();
+		self::forServices();
 
 		//Taxonomies
 
 		//Page Templates
 		self::forContactPage();
+		self::forAboutUsPage();
 
 		//Menu Items
 
+	}
+
+	private static function forAboutUsPage()
+	{
+		$acfGroup = new AcfGroup();
+
+		$acfGroup->layoutFields->addTab('about_intro_tab', 'Intro');
+		$acfGroup->contentFields->addImage('about_intro_main', 'Main Image', ['width' => '33%', 'return_format' => 'id']);
+		$acfGroup->advanceFields->addColorPicker('about_intro_accent_color', 'Accent Color', ['width' => '33%', 'default_value' => '#F4C400']);
+		$acfGroup->contentFields->addImage('about_intro_side', 'Side Image', ['width' => '33%', 'return_format' => 'id']);
+		$acfGroup->basicFields->addText('about_intro_title', 'Title', ['default_value' => 'Meet the Craftsman Behind Orange County Handy']);
+		$acfGroup->basicFields->addTextarea('about_intro_text', 'Body Text', ['rows' => '4', 'default_value' => "Orange County Handy isn’t built around call centers, random contractors, or complicated processes.\nIt’s built around hands-on work and personal service.\nFrom the first conversation to the final details, the goal has always been simple:"]);
+		$acfGroup->basicFields->addTextarea('about_intro_emphasis', 'Emphasis Text', ['rows' => '2', 'default_value' => 'understand what needs to be done, do it carefully, and make the whole process easier for the homeowner.']);
+		$acfGroup->basicFields->addTextarea('about_intro_quote', 'Cursive Quote', ['rows' => '3', 'default_value' => "One point of contact.\nClear communication.\nWork done with care."]);
+
+		$acfGroup->layoutFields->addTab('about_values_tab', 'Values');
+		$acfGroup->basicFields->addText('about_values_label', 'Label', ['width' => '50%', 'default_value' => "WHAT WE’RE BUILT ON"]);
+		$acfGroup->basicFields->addText('about_values_title', 'Title', ['width' => '50%', 'default_value' => 'The values behind every job.']);
+		for ($i = 1; $i <= 4; $i++) {
+			$acfGroup->basicFields->addText("about_value_{$i}_title", "Value {$i} Title", ['width' => '50%']);
+			$acfGroup->basicFields->addText("about_value_{$i}_text", "Value {$i} Text", ['width' => '50%']);
+		}
+
+		$acfGroup->layoutFields->addTab('about_story_tab', 'Our Story');
+		$acfGroup->basicFields->addText('about_story_label', 'Label', ['width' => '50%', 'default_value' => 'OUR STORY']);
+		$acfGroup->basicFields->addText('about_story_title', 'Title', ['width' => '50%', 'default_value' => 'Built One Project at a Time.']);
+		$acfGroup->basicFields->addTextarea('about_story_text', 'Intro Text', ['rows' => '4', 'default_value' => 'Orange County Handy grew from a simple idea: make home repairs and improvements easier for homeowners. With a focus on dependable service, clear communication, and careful workmanship, the business has grown through the trust of the people it serves.']);
+		for ($i = 1; $i <= 4; $i++) {
+			$acfGroup->basicFields->addText("about_story_{$i}_title", "Step {$i} Title", ['width' => '50%']);
+			$acfGroup->basicFields->addTextarea("about_story_{$i}_text", "Step {$i} Text", ['rows' => '3', 'width' => '50%']);
+		}
+
+		$acfGroup->layoutFields->addTab('about_gallery_tab', 'Gallery');
+		$acfGroup->basicFields->addText('about_gallery_title', 'Title', ['default_value' => 'On the Job With Orange County Handy']);
+		for ($i = 1; $i <= 16; $i++) {
+			$acfGroup->contentFields->addImage("about_gallery_{$i}", "Photo {$i}", ['width' => '25%', 'return_format' => 'id']);
+		}
+
+		$acfGroup->setLocation('page_template', '==', 'templates/about-us.php');
+		$acfGroup->register('AboutUs');
 	}
 
 	private static function forContactPage()
@@ -84,6 +145,24 @@ class ACF
 
 		// register group
 		$acfGroup->register('Blog Post');
+	}
+
+	private static function forServices()
+	{
+		$acfGroup = new AcfGroup();
+
+		$acfGroup->choiceFields->addSelect('service_icon', 'Icon', [
+			'choices' => [],
+			'ui' => 1,
+			'ajax' => 1,
+			'allow_null' => 1,
+			'default_value' => 'Tools,-Settings',
+			'return_format' => 'value',
+			'instructions' => 'Search icons — results load 10 at a time.',
+		]);
+
+		$acfGroup->setLocation('post_type', '==', 'service');
+		$acfGroup->register('Service');
 	}
 
 	private static function forReviews()

@@ -120,11 +120,12 @@ class ThemeInit {
 	 * @return void
 	 */
 	public static function adminEnqueueScripts() {
-		//Enqueue admin styles
 		wp_enqueue_style( THEME_SLUG . '-admin', THEME_URI . '/assets/css/admin.css', [], self::$version );
-
-		//Enqueue admin scripts
-		wp_enqueue_script( THEME_SLUG . '-admin', THEME_URI . '/assets/js/admin.js', [ 'jquery' ], self::$version, true );
+		wp_enqueue_script( THEME_SLUG . '-admin', THEME_URI . '/assets/js/admin.js', [ 'jquery', 'acf-input' ], self::$version, true );
+		wp_localize_script( THEME_SLUG . '-admin', 'cynAdmin', [
+			'restUrl' => esc_url_raw( rest_url() ),
+			'nonce' => wp_create_nonce( 'wp_rest' ),
+		] );
 	}
 
 	public static function logoutUser() {

@@ -7,7 +7,7 @@ namespace Composer\Autoload;
 class ComposerStaticInit01816361f203befcb321de592d3dc6de
 {
     public static $prefixLengthsPsr4 = array (
-        'C' => 
+        'C' =>
         array (
             'Cyan\\Theme\\Helpers\\Exceptions\\' => 30,
             'Cyan\\Theme\\Helpers\\ACF\\' => 23,
@@ -17,19 +17,19 @@ class ComposerStaticInit01816361f203befcb321de592d3dc6de
     );
 
     public static $prefixDirsPsr4 = array (
-        'Cyan\\Theme\\Helpers\\Exceptions\\' => 
+        'Cyan\\Theme\\Helpers\\Exceptions\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes/helpers/exceptions',
         ),
-        'Cyan\\Theme\\Helpers\\ACF\\' => 
+        'Cyan\\Theme\\Helpers\\ACF\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes/helpers/acf',
         ),
-        'Cyan\\Theme\\Helpers\\' => 
+        'Cyan\\Theme\\Helpers\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes/helpers',
         ),
-        'Cyan\\Theme\\Classes\\' => 
+        'Cyan\\Theme\\Classes\\' =>
         array (
             0 => __DIR__ . '/../..' . '/includes/classes',
         ),

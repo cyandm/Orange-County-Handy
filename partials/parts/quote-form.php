@@ -17,7 +17,7 @@ $timeframes = QuoteForm::timeframes();
 $property_types = QuoteForm::propertyTypes();
 $contact_methods = QuoteForm::contactMethods();
 
-$service_card = 'flex h-full w-full cursor-pointer flex-col items-center gap-1 rounded-lg border border-cynBorder bg-cynWhite p-1 transition-all duration-300 hover:border-cynBorderHover peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] lg:items-start lg:gap-2 lg:rounded-2xl lg:p-2';
+$service_card = 'flex h-full w-full cursor-pointer flex-col gap-1 rounded-lg border border-cynBorder bg-cynWhite p-1 transition-all duration-300 hover:border-cynBorderHover peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] sm:items-start sm:gap-2 sm:rounded-2xl sm:p-2';
 $time_card = 'flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-cynBorder bg-cynWhite p-2 text-center transition-all duration-300 hover:border-cynBorderHover peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_8px_9px_0_rgba(0,0,0,0.10)] lg:rounded-2xl';
 $contact_card = 'flex h-full w-full cursor-pointer flex-row items-center justify-center gap-2 rounded-lg border border-cynBorder bg-cynWhite px-2 py-3 transition-all duration-300 hover:border-cynBorderHover peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] lg:rounded-2xl';
 $circle_class = 'flex size-5 shrink-0 items-center justify-center rounded-full bg-cynBorder text-[10px] font-semibold text-cynTextWhite transition-all duration-300 group-data-[state=active]:bg-cynYellow group-data-[state=active]:text-cynTextBlack group-data-[state=done]:bg-cynYellow group-data-[state=done]:text-cynTextBlack lg:size-7 lg:text-sm';
@@ -34,21 +34,21 @@ $form_url = rest_url('cyn/v1/quote_form');
 				<?php echo esc_html(sprintf(__('step %1$s of %2$s • %3$s', 'orange-county-handy'), 1, count($steps), __('SERVICE', 'orange-county-handy'))); ?>
 			</p>
 
-			<div class="flex items-center gap-1 lg:gap-2">
+			<div class="flex w-full min-w-0 items-center gap-0.5 min-[420px]:gap-1 lg:gap-2">
 				<?php foreach ($steps as $index => $step) : ?>
 					<?php if ($index) : ?>
-						<span class="h-0.5 w-4 shrink-0 bg-cynBorder transition-all duration-300 data-[state=done]:bg-cynYellow lg:w-auto lg:flex-1" data-step-line="<?php echo esc_attr($index); ?>" data-state="todo"></span>
+						<span class="h-0.5 min-w-1.5 flex-1 bg-cynBorder transition-all duration-300 data-[state=done]:bg-cynYellow" data-step-line="<?php echo esc_attr($index); ?>" data-state="todo"></span>
 					<?php endif; ?>
-					<span class="group flex items-center gap-1 lg:gap-2" data-step-item="<?php echo esc_attr($index + 1); ?>" data-state="<?php echo $index ? 'todo' : 'active'; ?>">
+					<span class="group flex shrink-0 items-center gap-0.5 min-[420px]:gap-1 lg:gap-2" data-step-item="<?php echo esc_attr($index + 1); ?>" data-state="<?php echo $index ? 'todo' : 'active'; ?>">
 						<span class="<?php echo esc_attr($circle_class); ?>">
 							<span class="group-data-[state=done]:hidden">
 								<?php echo esc_html($index + 1); ?>
 							</span>
-							<i class="hidden size-4 items-center justify-center group-data-[state=done]:flex lg:size-5 [&_svg]:size-full [&_svg]:stroke-[2]" aria-hidden="true">
-								<?php Icon::print('Done,-Check'); ?>
+							<i class="hidden size-4 items-center justify-center group-data-[state=done]:flex [&_svg]:size-full" aria-hidden="true">
+								<?php echo file_get_contents(THEME_ASSETS_DIR . '/icon/check.svg'); ?>
 							</i>
 						</span>
-						<span class="text-xs font-normal text-cynTextBlack lg:text-sm">
+						<span class="hidden text-xs font-normal text-cynTextBlack min-[420px]:inline lg:text-sm">
 							<?php echo esc_html($step); ?>
 						</span>
 					</span>
@@ -63,19 +63,18 @@ $form_url = rest_url('cyn/v1/quote_form');
 				<?php esc_html_e('What can we help you with?', 'orange-county-handy'); ?>
 			</p>
 
-			<div class="grid grid-cols-4 gap-1 lg:grid-cols-4 lg:gap-3">
+			<div class="grid grid-cols-4 items-stretch gap-1 sm:gap-3">
 				<?php foreach ($services as $service) : ?>
-					<label class="flex min-h-16 lg:min-h-0">
+					<?php $icon = get_field('service_icon', $service->ID) ?: 'Tools,-Settings'; ?>
+					<label class="flex h-full">
 						<input type="radio" name="service" value="<?php echo esc_attr($service->ID); ?>" data-label="<?php echo esc_attr($service->post_title); ?>" class="peer sr-only" required>
 						<span class="<?php echo esc_attr($service_card); ?>">
-							<?php if (has_post_thumbnail($service)) : ?>
-								<?php echo get_the_post_thumbnail($service, 'thumbnail', ['class' => 'size-4 object-contain lg:size-6', 'alt' => esc_attr($service->post_title)]); ?>
-							<?php else : ?>
-								<i class="size-4 flex shrink-0 items-center justify-center text-cynTextBlack lg:size-6 [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
-									<?php Icon::print('Tools,-Settings'); ?>
+							<span class="flex w-full shrink-0 items-center justify-center sm:justify-between">
+								<i class="size-4 flex shrink-0 items-center justify-center text-cynTextBlack sm:size-6 [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
+									<?php Icon::print($icon); ?>
 								</i>
-							<?php endif; ?>
-							<span class="text-center text-[10px] font-medium text-cynTextBlack lg:text-start lg:text-sm">
+							</span>
+							<span class="w-full flex-1 text-center text-[10px] font-medium text-cynTextBlack sm:text-start sm:text-sm">
 								<?php echo esc_html($service->post_title); ?>
 							</span>
 						</span>
@@ -151,7 +150,7 @@ $form_url = rest_url('cyn/v1/quote_form');
 						<input id="quote-photos" name="photos[]" type="file" accept="image/jpeg,image/png,image/webp" multiple class="sr-only" data-remove-label="<?php esc_attr_e('Remove photo', 'orange-county-handy'); ?>">
 						<span class="flex items-start gap-2">
 							<i class="size-10 flex shrink-0 items-center justify-center text-cynTextBlack [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
-								<?php Icon::print('cloud-upload'); ?>
+								<?php Icon::print('Cloud,-Upload'); ?>
 							</i>
 							<span class="flex flex-col">
 								<span class="text-sm font-normal text-cynTextGray">
@@ -213,10 +212,10 @@ $form_url = rest_url('cyn/v1/quote_form');
 					<label for="quote-date" class="text-sm font-normal text-cynTextBlack">
 						<?php esc_html_e('preferred date (optional)', 'orange-county-handy'); ?>
 					</label>
-					<label class="secondary-input !bg-cynWhite !pe-0" for="quote-date">
-						<input id="quote-date" name="preferred_date" type="date" min="<?php echo esc_attr(wp_date('Y-m-d')); ?>">
+					<label class="secondary-input relative !bg-cynWhite !pe-0" for="quote-date">
+						<input id="quote-date" name="preferred_date" type="date" min="<?php echo esc_attr(wp_date('Y-m-d')); ?>" class="[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0">
 						<i class="!size-auto border-s border-cynBorder px-4 py-1.5 text-cynTextBlack [&_svg]:size-6" aria-hidden="true">
-							<?php Icon::print('Calendar,-Schedule'); ?>
+							<?php Icon::print('Calendar,Schedule-3'); ?>
 						</i>
 					</label>
 				</div>

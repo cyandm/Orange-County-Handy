@@ -100,6 +100,17 @@
       url("../../font/poppins/woff/Poppins-Black.woff") format("woff"),
       url("../../font/poppins/ttf/Poppins-Black.ttf") format("truetype");
   }
+
+  @font-face {
+    font-family: "Cedarville Cursive";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src:
+      url("../../font/cedarville-cursive/woff2/CedarvilleCursive-Regular.woff2") format("woff2"),
+      url("../../font/cedarville-cursive/woff/CedarvilleCursive-Regular.woff") format("woff"),
+      url("../../font/cedarville-cursive/ttf/CedarvilleCursive-Regular.ttf") format("truetype");
+  }
 }
 
 @layer base {
@@ -136,12 +147,14 @@
 
   --animate-fade-in-up: fade-in-up 0.4s ease-out both;
 
-  @keyframes fade-in-up {
-    from {
-      opacity: 0;
-      transform: translateY(0.75rem);
-    }
-  }
+	@keyframes fade-in-up {
+		from {
+			opacity: 0;
+			transform: translateY(0.75rem);
+		}
+	}
+
+	--font-cursive: "Cedarville Cursive", cursive;
 }
 
 :root {
@@ -416,4 +429,65 @@ a {
 
 #main-menu li li:hover {
   color: var(--color-cynYellow) !important;
+}
+
+.font-cursive {
+  font-family: var(--font-cursive);
+}
+
+.about-gallery-pagination .swiper-pagination-bullet,
+.about-gallery-pagination .about-gallery-bullet {
+  display: inline-block;
+  width: 30px;
+  height: 8px;
+  margin: 0 !important;
+  border-radius: 4px;
+  background: var(--color-cynBorder);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.about-gallery-pagination .swiper-pagination-bullet-active {
+  width: 60px;
+  background: var(--color-cynYellow);
+}
+
+.about-gallery-track {
+  overflow: hidden;
+}
+
+.about-gallery-swiper::part(container),
+.about-gallery-swiper .swiper {
+  overflow: hidden;
+}
+
+.about-gallery-swiper .swiper-wrapper {
+  align-items: center;
+}
+
+.about-gallery-slide__img {
+  height: 9rem;
+  transition: height 0.35s ease;
+}
+
+.about-gallery-slide {
+  transition: box-shadow 0.35s ease;
+}
+
+.about-gallery-swiper .swiper-slide-active .about-gallery-slide {
+  box-shadow: 0 3.5px 3.5px rgba(0, 0, 0, 0.25);
+}
+
+.about-gallery-swiper .swiper-slide-active .about-gallery-slide__img {
+  height: 10rem;
+}
+
+@media (min-width: 1024px) {
+  .about-gallery-slide__img {
+    height: 14rem;
+  }
+
+  .about-gallery-swiper .swiper-slide-active .about-gallery-slide__img {
+    height: 16rem;
+  }
 }

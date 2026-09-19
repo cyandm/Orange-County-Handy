@@ -22,6 +22,13 @@ class AcfChoiceFields extends AcfField
 		parent::addField('select', $name, $label, $this->withPassthroughAttributes([
 			'choices' => $additionalAttributes['choices'] ?? '',
 			'width' => $additionalAttributes['width'] ?? '',
+			'ui' => $additionalAttributes['ui'] ?? 0,
+			'ajax' => $additionalAttributes['ajax'] ?? 0,
+			'allow_null' => $additionalAttributes['allow_null'] ?? 0,
+			'default_value' => $additionalAttributes['default_value'] ?? '',
+			'return_format' => $additionalAttributes['return_format'] ?? 'value',
+			'multiple' => $additionalAttributes['multiple'] ?? 0,
+			'instructions' => $additionalAttributes['instructions'] ?? '',
 		], $additionalAttributes), $id);
 	}
 

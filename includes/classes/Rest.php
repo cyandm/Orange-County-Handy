@@ -25,6 +25,37 @@ class Rest
 	{
 		self::makeRoute('/contact_form', 'POST', [__CLASS__, 'createForm']);
 		self::makeRoute('/quote_form', 'POST', [__CLASS__, 'createQuote']);
+		self::makeRoute('/icon', 'GET', [__CLASS__, 'getIcon'], function () {
+			return current_user_can('edit_posts');
+		});
+		self::makeRoute('/icons', 'GET', [__CLASS__, 'searchIcons'], function () {
+			return current_user_can('edit_posts');
+		});
+	}
+
+	public static function getIcon(WP_REST_Request $request)
+	{
+		$name = sanitize_text_field((string) $request->get_param('name'));
+
+		if ($name === '' || ! \Cyan\Theme\Helpers\Icon::exists($name)) {
+			return new WP_REST_Response(['error' => 'Icon not found'], 404);
+		}
+
+		return new WP_REST_Response([
+			'name' => $name,
+			'svg' => \Cyan\Theme\Helpers\Icon::get($name),
+		], 200);
+	}
+
+	public static function searchIcons(WP_REST_Request $request)
+	{
+		$result = \Cyan\Theme\Helpers\Icon::search(
+			(string) $request->get_param('search'),
+			(int) ($request->get_param('page') ?: 1),
+			(int) ($request->get_param('per_page') ?: 10)
+		);
+
+		return new WP_REST_Response($result, 200);
 	}
 
 	public static function createQuote(WP_REST_Request $request)

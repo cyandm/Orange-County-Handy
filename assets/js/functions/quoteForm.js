@@ -28,6 +28,13 @@ export function QuoteForm() {
   const dropzone = form.querySelector("#quote-dropzone");
   const preview = form.querySelector("#quote-photos-preview");
   const summaryPhotos = form.querySelector("#quote-summary-photos");
+  const dateInput = form.querySelector("#quote-date");
+
+  if (dateInput) {
+    dateInput.addEventListener("click", () => {
+      if (typeof dateInput.showPicker === "function") dateInput.showPicker();
+    });
+  }
 
   const total = steps.length;
   let current = 0;

@@ -66,9 +66,9 @@ class QuoteForm
 	public static function contactMethods()
 	{
 		return [
-			'phone' => ['title' => __('phone call', 'orange-county-handy'), 'icon' => 'Phone,-Call'],
-			'text' => ['title' => __('Text Message', 'orange-county-handy'), 'icon' => 'Messages,-Chat-7'],
-			'email' => ['title' => __('Email', 'orange-county-handy'), 'icon' => 'Email,-Circle'],
+			'phone' => ['title' => __('phone call', 'orange-county-handy'), 'icon' => 'Phone,-Call-11'],
+			'text' => ['title' => __('Text Message', 'orange-county-handy'), 'icon' => 'Chat,-Messages-1'],
+			'email' => ['title' => __('Email', 'orange-county-handy'), 'icon' => 'email-mail-letter'],
 		];
 	}
 
@@ -172,7 +172,7 @@ class QuoteForm
 			'_photos' => $photos,
 		];
 
-		$new_post = wp_insert_post(['post_type' => 'quote_form', 'post_title' => $name . ' — ' . $service->post_title, 'post_status' => 'private', 'meta_input' => $meta]);
+		$new_post = wp_insert_post(['post_type' => 'quote_form', 'post_title' => $name . ' — ' . $service->post_title, 'post_status' => FormStatuses::defaultStatus('quote_form'), 'meta_input' => $meta]);
 
 		if (is_wp_error($new_post)) {
 			return self::result(false, __('The request could not be sent. Please try again.', 'orange-county-handy'), 500);

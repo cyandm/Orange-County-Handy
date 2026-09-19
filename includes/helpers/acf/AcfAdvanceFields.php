@@ -116,7 +116,9 @@ class AcfAdvanceFields extends AcfField {
 	 */
 	public function addColorPicker( $name, $label, $additionalAttributes = [], $id = '' ) {
 		parent::addField( 'color_picker', $name, $label, $this->withPassthroughAttributes( [ 
-			'return_format' => 'string',
+			'return_format' => $additionalAttributes['return_format'] ?? 'string',
+			'default_value' => $additionalAttributes['default_value'] ?? '',
+			'enable_opacity' => $additionalAttributes['enable_opacity'] ?? 0,
 			'transparent' => $additionalAttributes['transparent'] ?? 0,
 			'width' => $additionalAttributes['width'] ?? '',
 		], $additionalAttributes ), $id );

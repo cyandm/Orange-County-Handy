@@ -25,6 +25,8 @@ class Setup {
 		Search::init();
 
 		Meta::init();
+
+		FormStatuses::init();
 	}
 }
 
