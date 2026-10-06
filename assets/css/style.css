@@ -107,9 +107,12 @@
     font-weight: 400;
     font-display: swap;
     src:
-      url("../../font/cedarville-cursive/woff2/CedarvilleCursive-Regular.woff2") format("woff2"),
-      url("../../font/cedarville-cursive/woff/CedarvilleCursive-Regular.woff") format("woff"),
-      url("../../font/cedarville-cursive/ttf/CedarvilleCursive-Regular.ttf") format("truetype");
+      url("../../font/cedarville-cursive/woff2/CedarvilleCursive-Regular.woff2")
+        format("woff2"),
+      url("../../font/cedarville-cursive/woff/CedarvilleCursive-Regular.woff")
+        format("woff"),
+      url("../../font/cedarville-cursive/ttf/CedarvilleCursive-Regular.ttf")
+        format("truetype");
   }
 }
 
@@ -147,14 +150,14 @@
 
   --animate-fade-in-up: fade-in-up 0.4s ease-out both;
 
-	@keyframes fade-in-up {
-		from {
-			opacity: 0;
-			transform: translateY(0.75rem);
-		}
-	}
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
 
-	--font-cursive: "Cedarville Cursive", cursive;
+  --font-cursive: "Cedarville Cursive", cursive;
 }
 
 :root {
@@ -452,42 +455,54 @@ a {
   background: var(--color-cynYellow);
 }
 
-.about-gallery-track {
-  overflow: hidden;
+/* Active slide grows via negative margins so Swiper's slide box (and layout) stays the same size */
+.about-gallery-swiper::part(container) {
+  overflow: visible;
 }
 
-.about-gallery-swiper::part(container),
-.about-gallery-swiper .swiper {
-  overflow: hidden;
-}
-
-.about-gallery-swiper .swiper-wrapper {
-  align-items: center;
-}
-
-.about-gallery-slide__img {
-  height: 9rem;
-  transition: height 0.35s ease;
+.about-gallery-swiper .swiper-slide-active {
+  z-index: 1;
 }
 
 .about-gallery-slide {
-  transition: box-shadow 0.35s ease;
+  margin: 0;
+  transition: all 0.3s ease;
 }
 
-.about-gallery-swiper .swiper-slide-active .about-gallery-slide {
-  box-shadow: 0 3.5px 3.5px rgba(0, 0, 0, 0.25);
-}
-
-.about-gallery-swiper .swiper-slide-active .about-gallery-slide__img {
-  height: 10rem;
+.about-gallery-slide__img {
+  height: 8.75rem;
+  transition: all 0.3s ease;
 }
 
 @media (min-width: 1024px) {
   .about-gallery-slide__img {
     height: 14rem;
+    filter: grayscale(1);
   }
 
   .about-gallery-swiper .swiper-slide-active .about-gallery-slide__img {
-    height: 16rem;
+    filter: grayscale(0);
+  }
+
+  .about-gallery-swiper swiper-slide {
+    transition: transform 0.3s ease;
+  }
+
+  /* Shift siblings by the active slide's growth per side so the gap stays 12px */
+  .about-gallery-swiper swiper-slide:has(~ .swiper-slide-active) {
+    transform: translateX(-1.25rem);
+  }
+
+  .about-gallery-swiper .swiper-slide-active ~ swiper-slide {
+    transform: translateX(1.25rem);
+  }
+
+  .about-gallery-swiper .swiper-slide-active .about-gallery-slide {
+    width: calc(100% + 2.5rem);
+    margin: -1.5rem -1.25rem;
+  }
+
+  .about-gallery-swiper .swiper-slide-active .about-gallery-slide__img {
+    height: calc(14rem + 3rem);
   }
 }

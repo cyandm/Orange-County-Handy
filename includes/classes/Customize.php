@@ -119,6 +119,7 @@ class Customize {
 		self::$wpCustomize->add_section('logo_section', ['title' => 'Other Logos', 'priority' => 1, 'panel' => 'information']);
 		self::$wpCustomize->add_section('reviews_section', ['title' => 'Reviews Archive', 'priority' => 1, 'panel' => 'information']);
 		self::$wpCustomize->add_section('blog_section', ['title' => 'Blog Archive', 'priority' => 1, 'panel' => 'information']);
+		self::$wpCustomize->add_section('services_section', ['title' => 'Services Archive', 'priority' => 1, 'panel' => 'information']);
 
 		self::addControl('social_section', 'text', 'instagram_link', 'Instagram URL');
 		self::addControl('social_section', 'text', 'whatsapp_number', 'WhatsApp Link');
@@ -142,5 +143,13 @@ class Customize {
 		self::addControl('reviews_section', 'text', 'reviews_thumbtack_hires', 'Hires on Thumbtack', 'Entered manually, e.g. 231+');
 
 		self::addControl('blog_section', 'text', 'blog_archive_title', 'Archive Title', 'Shown on the blog archive, category and tag pages use the term name');
+
+		self::addControl('services_section', 'text', 'services_archive_title', 'Archive Title');
+		self::addControl('services_section', 'textarea', 'services_archive_text', 'Archive Text');
+		self::addControl('services_section', 'file', 'services_archive_image', 'Hero Image');
+		self::addControl('services_section', 'text', 'services_grid_title', 'Services Title');
+		self::addControl('services_section', 'text', 'services_faq_title', 'FAQ Title');
+		self::addControl('services_section', 'text', 'services_cta_title', 'CTA Title');
+		self::addControl('services_section', 'textarea', 'services_cta_text', 'CTA Text');
 	}
 }

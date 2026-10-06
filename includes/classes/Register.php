@@ -119,10 +119,10 @@ class Register
 
 	public static function registerPostType()
 	{
-		self::makePostType('contact_form', 'Contact Form', 'Contact Form', 'dashicons-phone', ['title']);
+		self::makePostType('contact_form', 'Contact Form', 'Contact Form', 'dashicons-phone', ['title'], false, false, false);
 		self::makePostType('quote_form', 'Quote Request', 'Quote Requests', 'dashicons-clipboard', ['title'], false, false, false);
-		self::makePostType('faq', 'FAQ', 'FAQ', 'dashicons-editor-help', ['title', 'editor']);
-		self::makePostType('review', 'Review', 'Reviews', 'dashicons-admin-comments', ['title', 'editor']);
+		self::makePostType('faq', 'FAQ', 'FAQ', 'dashicons-editor-help', ['title', 'editor'], false, false, false);
+		self::makePostType('review', 'Review', 'Reviews', 'dashicons-admin-comments', ['title', 'editor'], false, false, true);
 		self::makePostType('service', 'Service', 'Services', 'dashicons-hammer', ['title', 'editor', 'thumbnail', 'page-attributes']);
 	}
 

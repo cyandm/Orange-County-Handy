@@ -37,9 +37,9 @@ foreach ($defaults as $i => $default) {
 			</h2>
 		</div>
 
-		<div class="flex flex-col items-center gap-7 lg:flex-1 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
+		<div class="grid grid-cols-1 justify-items-center gap-7 sm:grid-cols-2 lg:flex lg:flex-1 lg:items-start lg:justify-between lg:gap-10">
 			<?php foreach ($values as $value) : ?>
-				<div class="flex w-full max-w-36 flex-col gap-2">
+				<div class="flex w-full flex-col gap-2 text-center sm:text-start max-w-44 sm:max-w-36">
 					<div class="border-b border-cynYellow pb-2">
 						<span class="text-3xl font-extrabold leading-10 text-cynYellow">
 							<?php echo esc_html($value['num']); ?>

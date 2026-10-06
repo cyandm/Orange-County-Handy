@@ -35,13 +35,13 @@ $nav_btn = 'size-12 shrink-0 items-center justify-center rounded-[30px] bg-cynYe
 				</i>
 			</button>
 
-			<div class="about-gallery-track min-w-0 flex-1 overflow-hidden">
+			<div class="about-gallery-track min-w-0 flex-1 overflow-hidden lg:px-5 lg:pt-6 lg:pb-8">
 				<swiper-container class="about-gallery-swiper w-full" init="false">
 					<?php foreach ($ids as $image_id) : ?>
 						<?php $full = wp_get_attachment_image_url($image_id, 'full'); ?>
 						<swiper-slide class="!h-auto">
-							<a href="<?php echo esc_url($full); ?>" class="about-gallery-lightbox about-gallery-slide block w-full cursor-pointer overflow-hidden rounded-lg lg:rounded-xl">
-								<?php echo wp_get_attachment_image($image_id, 'large', false, ['class' => 'about-gallery-slide__img w-full object-cover pointer-events-none', 'alt' => esc_attr(get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: $title)]); ?>
+							<a href="<?php echo esc_url($full); ?>" class="about-gallery-lightbox about-gallery-slide block w-full cursor-pointer overflow-hidden rounded-lg lg:rounded-xl lg:[.swiper-slide-active_&]:shadow-[0_3.5px_3.5px_0_rgba(0,0,0,0.25)]">
+								<?php echo wp_get_attachment_image($image_id, 'large', false, ['class' => 'about-gallery-slide__img w-full object-cover pointer-events-none rounded-lg lg:rounded-xl', 'alt' => esc_attr(get_post_meta($image_id, '_wp_attachment_image_alt', true) ?: $title)]); ?>
 							</a>
 						</swiper-slide>
 					<?php endforeach; ?>
@@ -69,7 +69,7 @@ $nav_btn = 'size-12 shrink-0 items-center justify-center rounded-[30px] bg-cynYe
 			</button>
 		</div>
 
-		<div class="about-gallery-pagination flex items-center justify-center gap-1"></div>
+		<div class="about-gallery-pagination hidden items-center justify-center gap-1 lg:flex"></div>
 
 	</div>
 
