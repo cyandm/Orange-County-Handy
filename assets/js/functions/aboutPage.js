@@ -1,8 +1,6 @@
 /**
- * About Us — story timeline (desktop: one step per scroll) + gallery swiper
+ * About Us — story timeline (desktop: one step per scroll)
  */
-
-import { Fancybox } from "@fancyapps/ui";
 
 export function AboutStory() {
   const section = document.getElementById("about-story");
@@ -64,7 +62,11 @@ export function AboutStory() {
       const index = steps.indexOf(visible.target);
       if (index >= 0) setActive(index);
     },
-    { root: null, rootMargin: "-35% 0px -45% 0px", threshold: [0.25, 0.5, 0.75] }
+    {
+      root: null,
+      rootMargin: "-35% 0px -45% 0px",
+      threshold: [0.25, 0.5, 0.75],
+    },
   );
 
   steps.forEach((step) => mobileObserver.observe(step));
@@ -83,7 +85,7 @@ export function AboutStory() {
           locked = false;
         }, 450);
       },
-      { passive: false }
+      { passive: false },
     );
   }
 
@@ -94,76 +96,4 @@ export function AboutStory() {
 
   window.addEventListener("resize", onResize, { passive: true });
   setActive(0);
-}
-
-export function AboutGallery() {
-  const el = document.querySelector(".about-gallery-swiper");
-  if (!el || typeof el.initialize !== "function") return;
-
-  const paginationEl = document.querySelector(".about-gallery-pagination");
-
-  Object.assign(el, {
-    slidesPerView: 3,
-    spaceBetween: 12,
-    centeredSlides: true,
-    loop: true,
-    speed: 450,
-    breakpoints: {
-      1024: {
-        slidesPerView: 5,
-        spaceBetween: 12,
-        centeredSlides: true,
-      },
-    },
-    pagination: paginationEl
-      ? {
-          el: paginationEl,
-          clickable: true,
-        }
-      : false,
-  });
-
-  el.initialize();
-
-  const swiper = el.swiper;
-  if (!swiper) return;
-
-  document.querySelectorAll(".about-gallery-prev").forEach((btn) => {
-    btn.addEventListener("click", () => swiper.slidePrev());
-  });
-  document.querySelectorAll(".about-gallery-next").forEach((btn) => {
-    btn.addEventListener("click", () => swiper.slideNext());
-  });
-
-  el.addEventListener("click", (event) => {
-    const link = event.target.closest("a.about-gallery-lightbox");
-    if (!link) return;
-
-    event.preventDefault();
-
-    const links = [
-      ...el.querySelectorAll(
-        "swiper-slide:not(.swiper-slide-duplicate) a.about-gallery-lightbox"
-      ),
-    ];
-    const items = links.map((anchor) => ({
-      src: anchor.getAttribute("href"),
-      type: "image",
-    }));
-    const startIndex = Math.max(
-      0,
-      items.findIndex((item) => item.src === link.getAttribute("href"))
-    );
-
-    Fancybox.show(items, {
-      startIndex,
-      Thumbs: false,
-      Toolbar: {
-        display: {
-          left: ["counter"],
-          right: ["close"],
-        },
-      },
-    });
-  });
 }

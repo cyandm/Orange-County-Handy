@@ -16,7 +16,9 @@ import { Accordion } from "./functions/accordion";
 import { SearchPage } from "./functions/search";
 import { Marquee } from "./functions/marquee";
 import { QuoteForm } from "./functions/quoteForm";
-import { AboutStory, AboutGallery } from "./functions/aboutPage";
+import { AboutStory } from "./functions/aboutPage";
+import { GallerySlider } from "./functions/gallerySlider";
+import { FaqSection } from "./functions/faqSection";
 import fancybox from "./modules/fancybox";
 
 Modals();
@@ -34,5 +36,6 @@ SearchPage();
 Marquee();
 QuoteForm();
 AboutStory();
-AboutGallery();
+GallerySlider();
+FaqSection();
 fancybox();

@@ -438,8 +438,8 @@ a {
   font-family: var(--font-cursive);
 }
 
-.about-gallery-pagination .swiper-pagination-bullet,
-.about-gallery-pagination .about-gallery-bullet {
+.gallery-slider-pagination .swiper-pagination-bullet,
+.gallery-slider-pagination .gallery-slider-bullet {
   display: inline-block;
   width: 30px;
   height: 8px;
@@ -450,59 +450,62 @@ a {
   transition: all 0.3s ease;
 }
 
-.about-gallery-pagination .swiper-pagination-bullet-active {
+.gallery-slider-pagination .swiper-pagination-bullet-active {
   width: 60px;
   background: var(--color-cynYellow);
 }
 
 /* Active slide grows via negative margins so Swiper's slide box (and layout) stays the same size */
-.about-gallery-swiper::part(container) {
+.gallery-slider-swiper::part(container) {
   overflow: visible;
 }
 
-.about-gallery-swiper .swiper-slide-active {
+.gallery-slider-swiper .swiper-slide-active {
   z-index: 1;
 }
 
-.about-gallery-slide {
+.gallery-slider-slide {
   margin: 0;
   transition: all 0.3s ease;
 }
 
-.about-gallery-slide__img {
+.gallery-slider-slide__img {
   height: 8.75rem;
   transition: all 0.3s ease;
 }
 
 @media (min-width: 1024px) {
-  .about-gallery-slide__img {
+  .gallery-slider-slide__img {
     height: 14rem;
+  }
+
+  .gallery-slider--gray .gallery-slider-slide__img {
     filter: grayscale(1);
   }
 
-  .about-gallery-swiper .swiper-slide-active .about-gallery-slide__img {
+  .gallery-slider--gray .swiper-slide-active .gallery-slider-slide__img {
     filter: grayscale(0);
   }
 
-  .about-gallery-swiper swiper-slide {
+  .gallery-slider-swiper swiper-slide {
     transition: transform 0.3s ease;
   }
 
   /* Shift siblings by the active slide's growth per side so the gap stays 12px */
-  .about-gallery-swiper swiper-slide:has(~ .swiper-slide-active) {
+  .gallery-slider-swiper swiper-slide:has(~ .swiper-slide-active) {
     transform: translateX(-1.25rem);
   }
 
-  .about-gallery-swiper .swiper-slide-active ~ swiper-slide {
+  .gallery-slider-swiper .swiper-slide-active ~ swiper-slide {
     transform: translateX(1.25rem);
   }
 
-  .about-gallery-swiper .swiper-slide-active .about-gallery-slide {
+  .gallery-slider-swiper .swiper-slide-active .gallery-slider-slide {
     width: calc(100% + 2.5rem);
     margin: -1.5rem -1.25rem;
   }
 
-  .about-gallery-swiper .swiper-slide-active .about-gallery-slide__img {
+  .gallery-slider-swiper .swiper-slide-active .gallery-slider-slide__img {
     height: calc(14rem + 3rem);
   }
 }

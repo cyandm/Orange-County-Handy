@@ -20408,30 +20408,25 @@
   function Accordion() {
     const accordionButtons = document.querySelectorAll(".accordion-button");
     if (!accordionButtons.length) return;
+    const toggle = (button, open) => {
+      const targetId = button.getAttribute("data-accordion-target");
+      const content = document.querySelector(`[data-accordion-content="${targetId}"]`);
+      const icon = button.querySelector(".accordion-icon");
+      const iconRotate = button.getAttribute("data-accordion-icon-rotate") || "45";
+      if (!content) return;
+      button.setAttribute("aria-expanded", open);
+      content.style.gridTemplateRows = open ? "1fr" : "0fr";
+      content.classList.toggle("mt-3", open);
+      if (icon) icon.style.transform = open ? `rotate(${iconRotate}deg)` : "rotate(0deg)";
+    };
     accordionButtons.forEach((button) => {
       button.addEventListener("click", () => {
-        const targetId = button.getAttribute("data-accordion-target");
-        const content = document.querySelector(
-          `[data-accordion-content="${targetId}"]`
-        );
-        const icon = button.querySelector(".accordion-icon");
         const isExpanded = button.getAttribute("aria-expanded") === "true";
-        if (!content) return;
-        button.setAttribute("aria-expanded", !isExpanded);
-        const iconRotate = button.getAttribute("data-accordion-icon-rotate") || "45";
-        if (isExpanded) {
-          content.style.gridTemplateRows = "0fr";
-          if (icon) {
-            icon.style.transform = "rotate(0deg)";
-          }
-          content.classList.remove("mt-3");
-        } else {
-          content.style.gridTemplateRows = "1fr";
-          if (icon) {
-            icon.style.transform = `rotate(${iconRotate}deg)`;
-          }
-          content.classList.add("mt-3");
+        if (!isExpanded) {
+          const group = button.closest("[data-accordion-group]");
+          group?.querySelectorAll('.accordion-button[aria-expanded="true"]').forEach((other) => other !== button && toggle(other, false));
         }
+        toggle(button, !isExpanded);
       });
     });
   }
@@ -20692,6 +20687,87 @@
       wizard.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     render();
+  }
+
+  // assets/js/functions/aboutPage.js
+  function AboutStory() {
+    const section = document.getElementById("about-story");
+    if (!section) return;
+    const steps = [...section.querySelectorAll(".about-story-step")];
+    const progress = document.getElementById("about-story-progress");
+    const scroller = document.getElementById("about-story-scroll");
+    const fade = section.querySelector(".about-story-fade");
+    if (!steps.length) return;
+    let activeIndex = 0;
+    let locked = false;
+    const isDesktop = () => window.matchMedia("(min-width: 1024px)").matches;
+    const setActive = (index) => {
+      activeIndex = index;
+      steps.forEach((step, i8) => {
+        const on2 = i8 === index;
+        step.dataset.state = on2 ? "active" : "idle";
+        const dot = step.querySelector(".about-story-dot");
+        if (dot) dot.dataset.state = on2 ? "active" : "idle";
+      });
+      if (fade) {
+        fade.classList.toggle("opacity-0", index >= steps.length - 1);
+      }
+      if (!progress) return;
+      const track = progress.parentElement;
+      const ratio = steps.length <= 1 ? 1 : index / (steps.length - 1);
+      const min = 20;
+      const max = track?.clientHeight || 80;
+      progress.style.height = `${Math.max(min, Math.round(min + (max - min) * ratio))}px`;
+    };
+    const goToStep = (index) => {
+      index = Math.max(0, Math.min(steps.length - 1, index));
+      const step = steps[index];
+      if (!step || !scroller) {
+        setActive(index);
+        return;
+      }
+      if (isDesktop()) {
+        scroller.scrollTo({ top: step.offsetTop, behavior: "smooth" });
+      }
+      setActive(index);
+    };
+    const mobileObserver = new IntersectionObserver(
+      (entries) => {
+        if (isDesktop()) return;
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a7, b3) => b3.intersectionRatio - a7.intersectionRatio)[0];
+        if (!visible) return;
+        const index = steps.indexOf(visible.target);
+        if (index >= 0) setActive(index);
+      },
+      {
+        root: null,
+        rootMargin: "-35% 0px -45% 0px",
+        threshold: [0.25, 0.5, 0.75]
+      }
+    );
+    steps.forEach((step) => mobileObserver.observe(step));
+    if (scroller) {
+      scroller.addEventListener(
+        "wheel",
+        (event2) => {
+          if (!isDesktop()) return;
+          event2.preventDefault();
+          if (locked || Math.abs(event2.deltaY) < 2) return;
+          locked = true;
+          goToStep(activeIndex + (event2.deltaY > 0 ? 1 : -1));
+          window.setTimeout(() => {
+            locked = false;
+          }, 450);
+        },
+        { passive: false }
+      );
+    }
+    const onResize2 = () => {
+      if (isDesktop()) goToStep(activeIndex);
+      else setActive(0);
+    };
+    window.addEventListener("resize", onResize2, { passive: true });
+    setActive(0);
   }
 
   // node_modules/@fancyapps/ui/dist/utils/isString.js
@@ -24034,141 +24110,83 @@
     })(i8, s11, l8);
   } };
 
-  // assets/js/functions/aboutPage.js
-  function AboutStory() {
-    const section = document.getElementById("about-story");
-    if (!section) return;
-    const steps = [...section.querySelectorAll(".about-story-step")];
-    const progress = document.getElementById("about-story-progress");
-    const scroller = document.getElementById("about-story-scroll");
-    const fade = section.querySelector(".about-story-fade");
-    if (!steps.length) return;
-    let activeIndex = 0;
-    let locked = false;
-    const isDesktop = () => window.matchMedia("(min-width: 1024px)").matches;
-    const setActive = (index) => {
-      activeIndex = index;
-      steps.forEach((step, i8) => {
-        const on2 = i8 === index;
-        step.dataset.state = on2 ? "active" : "idle";
-        const dot = step.querySelector(".about-story-dot");
-        if (dot) dot.dataset.state = on2 ? "active" : "idle";
-      });
-      if (fade) {
-        fade.classList.toggle("opacity-0", index >= steps.length - 1);
-      }
-      if (!progress) return;
-      const track = progress.parentElement;
-      const ratio = steps.length <= 1 ? 1 : index / (steps.length - 1);
-      const min = 20;
-      const max = track?.clientHeight || 80;
-      progress.style.height = `${Math.max(min, Math.round(min + (max - min) * ratio))}px`;
-    };
-    const goToStep = (index) => {
-      index = Math.max(0, Math.min(steps.length - 1, index));
-      const step = steps[index];
-      if (!step || !scroller) {
-        setActive(index);
-        return;
-      }
-      if (isDesktop()) {
-        scroller.scrollTo({ top: step.offsetTop, behavior: "smooth" });
-      }
-      setActive(index);
-    };
-    const mobileObserver = new IntersectionObserver(
-      (entries) => {
-        if (isDesktop()) return;
-        const visible = entries.filter((entry) => entry.isIntersecting).sort((a7, b3) => b3.intersectionRatio - a7.intersectionRatio)[0];
-        if (!visible) return;
-        const index = steps.indexOf(visible.target);
-        if (index >= 0) setActive(index);
-      },
-      { root: null, rootMargin: "-35% 0px -45% 0px", threshold: [0.25, 0.5, 0.75] }
-    );
-    steps.forEach((step) => mobileObserver.observe(step));
-    if (scroller) {
-      scroller.addEventListener(
-        "wheel",
-        (event2) => {
-          if (!isDesktop()) return;
-          event2.preventDefault();
-          if (locked || Math.abs(event2.deltaY) < 2) return;
-          locked = true;
-          goToStep(activeIndex + (event2.deltaY > 0 ? 1 : -1));
-          window.setTimeout(() => {
-            locked = false;
-          }, 450);
-        },
-        { passive: false }
-      );
-    }
-    const onResize2 = () => {
-      if (isDesktop()) goToStep(activeIndex);
-      else setActive(0);
-    };
-    window.addEventListener("resize", onResize2, { passive: true });
-    setActive(0);
-  }
-  function AboutGallery() {
-    const el = document.querySelector(".about-gallery-swiper");
-    if (!el || typeof el.initialize !== "function") return;
-    const paginationEl = document.querySelector(".about-gallery-pagination");
-    Object.assign(el, {
-      slidesPerView: 3,
-      spaceBetween: 12,
-      centeredSlides: true,
-      loop: true,
-      speed: 450,
-      breakpoints: {
-        1024: {
-          slidesPerView: 5,
-          spaceBetween: 12,
-          centeredSlides: true
-        }
-      },
-      pagination: paginationEl ? {
-        el: paginationEl,
-        clickable: true
-      } : false
-    });
-    el.initialize();
-    const swiper = el.swiper;
-    if (!swiper) return;
-    document.querySelectorAll(".about-gallery-prev").forEach((btn) => {
-      btn.addEventListener("click", () => swiper.slidePrev());
-    });
-    document.querySelectorAll(".about-gallery-next").forEach((btn) => {
-      btn.addEventListener("click", () => swiper.slideNext());
-    });
-    el.addEventListener("click", (event2) => {
-      const link = event2.target.closest("a.about-gallery-lightbox");
-      if (!link) return;
-      event2.preventDefault();
-      const links = [
-        ...el.querySelectorAll(
-          "swiper-slide:not(.swiper-slide-duplicate) a.about-gallery-lightbox"
-        )
-      ];
-      const items = links.map((anchor) => ({
-        src: anchor.getAttribute("href"),
-        type: "image"
-      }));
-      const startIndex = Math.max(
-        0,
-        items.findIndex((item) => item.src === link.getAttribute("href"))
-      );
-      F.show(items, {
-        startIndex,
-        Thumbs: false,
-        Toolbar: {
-          display: {
-            left: ["counter"],
-            right: ["close"]
+  // assets/js/functions/gallerySlider.js
+  function GallerySlider() {
+    document.querySelectorAll(".gallery-slider").forEach((section) => {
+      const el = section.querySelector(".gallery-slider-swiper");
+      if (!el || typeof el.initialize !== "function") return;
+      const paginationEl = section.querySelector(".gallery-slider-pagination");
+      Object.assign(el, {
+        slidesPerView: 3,
+        spaceBetween: 12,
+        centeredSlides: true,
+        loop: true,
+        speed: 450,
+        breakpoints: {
+          1024: {
+            slidesPerView: 5,
+            spaceBetween: 12,
+            centeredSlides: true
           }
-        }
+        },
+        pagination: paginationEl ? {
+          el: paginationEl,
+          clickable: true
+        } : false
+      });
+      el.initialize();
+      const swiper = el.swiper;
+      if (!swiper) return;
+      section.querySelectorAll(".gallery-slider-prev").forEach((btn) => {
+        btn.addEventListener("click", () => swiper.slidePrev());
+      });
+      section.querySelectorAll(".gallery-slider-next").forEach((btn) => {
+        btn.addEventListener("click", () => swiper.slideNext());
+      });
+      el.addEventListener("click", (event2) => {
+        const link = event2.target.closest("a.gallery-slider-lightbox");
+        if (!link) return;
+        event2.preventDefault();
+        const links = [
+          ...el.querySelectorAll(
+            "swiper-slide:not(.swiper-slide-duplicate) a.gallery-slider-lightbox"
+          )
+        ];
+        const items = links.map((anchor) => ({
+          src: anchor.getAttribute("href"),
+          type: "image"
+        }));
+        const startIndex = Math.max(
+          0,
+          items.findIndex((item) => item.src === link.getAttribute("href"))
+        );
+        F.show(items, {
+          startIndex,
+          Thumbs: false,
+          Toolbar: {
+            display: {
+              left: ["counter"],
+              right: ["close"]
+            }
+          }
+        });
       });
     });
+  }
+
+  // assets/js/functions/faqSection.js
+  function FaqSection() {
+    const rows = document.querySelectorAll("[data-faq-row]");
+    if (!rows.length) return;
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const sync = () => rows.forEach((row) => {
+      const box = row.querySelector("[data-faq-box]");
+      const cta = row.querySelector("[data-faq-cta]");
+      if (box && cta) cta.style.minHeight = desktop.matches ? `${box.offsetHeight}px` : "";
+    });
+    sync();
+    window.addEventListener("load", sync);
+    desktop.addEventListener("change", sync);
   }
 
   // assets/js/modules/fancybox.js
@@ -24201,7 +24219,8 @@
   Marquee();
   QuoteForm();
   AboutStory();
-  AboutGallery();
+  GallerySlider();
+  FaqSection();
   fancybox();
 })();
 /*! Bundled license information:

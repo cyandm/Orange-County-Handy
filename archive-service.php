@@ -15,7 +15,7 @@ get_header(); ?>
 
 	<?php Templates::getPart('services/services-hero'); ?>
 	<?php Templates::getPart('services/services-grid'); ?>
-	<?php Templates::getPart('services/services-faq'); ?>
+	<?php Templates::getPart('faq-section', ['faq_place' => 'services']); ?>
 
 </main>
 

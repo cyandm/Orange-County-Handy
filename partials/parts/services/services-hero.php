@@ -10,9 +10,6 @@ use Cyan\Theme\Helpers\Templates;
 $title = get_option('services_archive_title') ?: __('Our Services', 'orange-county-handy');
 $text = get_option('services_archive_text') ?: __('From everyday repairs and maintenance to installations, painting, plumbing, electrical work, and custom woodwork, Orange County Handy is here to help you take care of the jobs on your list.', 'orange-county-handy');
 $image = get_option('services_archive_image');
-
-$quote_url = Templates::getPageUrl('get-quote');
-$phone_number = get_option('phone_number');
 ?>
 
 <section id="services-hero" class="relative overflow-hidden lg:bg-cynBG">
@@ -35,18 +32,7 @@ $phone_number = get_option('phone_number');
 			</p>
 		</div>
 
-		<div class="flex items-center gap-2">
-			<?php if ($quote_url) : ?>
-				<a href="<?php echo esc_url($quote_url); ?>" class="primary-btn flex-1 text-center lg:flex-none">
-					<?php esc_html_e('get a fast quote', 'orange-county-handy'); ?>
-				</a>
-			<?php endif; ?>
-			<?php if ($phone_number) : ?>
-				<a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $phone_number)); ?>" class="secondary-btn text-center">
-					<?php echo esc_html(sprintf(__('Call or Text: %s', 'orange-county-handy'), $phone_number)); ?>
-				</a>
-			<?php endif; ?>
-		</div>
+		<?php Templates::getPart('services/services-buttons', ['on_yellow' => false]); ?>
 
 	</div>
 
