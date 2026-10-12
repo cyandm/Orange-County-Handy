@@ -29,9 +29,9 @@ $form_url = rest_url('cyn/v1/contact_form');
 		<h1 class="text-xl lg:text-2xl font-bold capitalize text-cynTextBlack">
 			<?php echo esc_html($title); ?>
 		</h1>
-		<p class="text-sm font-normal text-cynTextGray">
-			<?php echo esc_html($subtitle); ?>
-		</p>
+		<div class="text-sm font-normal text-cynTextGray">
+			<?php echo wp_kses_post($subtitle); ?>
+		</div>
 	</div>
 
 	<form

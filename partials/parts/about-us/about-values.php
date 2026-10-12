@@ -49,9 +49,9 @@ foreach ($defaults as $i => $default) {
 						<p class="text-base font-semibold text-cynTextWhite">
 							<?php echo esc_html($value['title']); ?>
 						</p>
-						<p class="text-sm font-normal text-cynTextWhite">
-							<?php echo esc_html($value['text']); ?>
-						</p>
+						<div class="text-sm font-normal text-cynTextWhite">
+							<?php echo wp_kses_post($value['text']); ?>
+						</div>
 					</div>
 				</div>
 			<?php endforeach; ?>

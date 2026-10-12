@@ -1,6 +1,7 @@
 <?php
 
 use Cyan\Theme\Helpers\Icon;
+use Cyan\Theme\Helpers\Templates;
 
 $logo_footer = get_option('logo_footer');
 $phone_number = get_option('phone_number');
@@ -108,3 +109,5 @@ $has_contact = $phone_number || $service_areas || $instagram_link || $email_addr
 	</div>
 
 </section>
+
+<?php Templates::getPart('floating-contact'); ?>

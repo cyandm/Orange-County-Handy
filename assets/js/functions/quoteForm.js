@@ -36,6 +36,14 @@ export function QuoteForm() {
     });
   }
 
+  const params = new URLSearchParams(window.location.search);
+  const service = form.querySelector(`[name="service"][value="${CSS.escape(params.get("service") || "")}"]`);
+  if (service) service.checked = true;
+  ["zip", "phone"].forEach((name) => {
+    const field = form.querySelector(`[name="${name}"]`);
+    if (field && params.get(name)) field.value = params.get(name);
+  });
+
   const total = steps.length;
   let current = 0;
   let photos = [];

@@ -60,11 +60,63 @@ class ACF
 		//Taxonomies
 
 		//Page Templates
+		self::forHomePage();
 		self::forContactPage();
 		self::forAboutUsPage();
 
 		//Menu Items
 
+	}
+
+	private static function forHomePage()
+	{
+		$acfGroup = new AcfGroup();
+
+		$acfGroup->layoutFields->addTab('home_hero_tab', 'Hero');
+		$acfGroup->contentFields->addImage('home_hero_image', 'Image', ['width' => '33%', 'return_format' => 'id']);
+		$acfGroup->basicFields->addText('home_hero_title', 'Title', ['width' => '67%', 'placeholder' => 'Your trusted handyman services in orange county']);
+		$acfGroup->basicFields->addText('home_hero_highlight', 'Highlighted Word', ['width' => '33%', 'placeholder' => 'handyman', 'instructions' => 'Part of the title shown in yellow.']);
+		$acfGroup->contentFields->addTextEditor('home_hero_text', 'Text', ['width' => '67%', 'media_upload' => 0]);
+
+		$acfGroup->layoutFields->addTab('home_features_tab', 'Why Choose Us');
+		$acfGroup->basicFields->addText('home_features_title', 'Title (mobile)', ['placeholder' => 'why Choose us for Handyman services?']);
+		for ($i = 1; $i <= 3; $i++) {
+			$acfGroup->basicFields->addText("home_feature_{$i}_title", "Feature {$i}", ['width' => '33%']);
+		}
+
+		$acfGroup->layoutFields->addTab('home_sliders_tab', 'Services & Reviews');
+		$acfGroup->basicFields->addText('home_services_title', 'Services Title', ['width' => '50%', 'placeholder' => 'Our Services']);
+		$acfGroup->basicFields->addText('home_reviews_title', 'Reviews Title', ['width' => '50%', 'placeholder' => 'Trusted by Local Homeowners']);
+
+		$acfGroup->layoutFields->addTab('home_about_tab', 'About');
+		$acfGroup->basicFields->addText('home_about_title', 'Title', ['placeholder' => 'Meet Orange County Handy']);
+		$acfGroup->contentFields->addTextEditor('home_about_text', 'Text', ['media_upload' => 0]);
+		for ($i = 1; $i <= 3; $i++) {
+			$acfGroup->basicFields->addText("home_about_badge_{$i}", "Badge {$i}", ['width' => '33%']);
+		}
+		for ($i = 1; $i <= 3; $i++) {
+			$acfGroup->contentFields->addImage("home_about_image_{$i}", "Photo {$i}", ['width' => '33%', 'return_format' => 'id']);
+		}
+
+		$acfGroup->layoutFields->addTab('home_quote_tab', 'Fast Quote');
+		$acfGroup->contentFields->addImage('home_quote_image', 'Image', ['width' => '33%', 'return_format' => 'id']);
+		$acfGroup->basicFields->addText('home_quote_title', 'Title', ['width' => '67%', 'placeholder' => 'get a fast quote']);
+		$acfGroup->contentFields->addTextEditor('home_quote_note', 'Note', ['media_upload' => 0]);
+
+		$acfGroup->layoutFields->addTab('home_steps_tab', 'How It Works');
+		$acfGroup->basicFields->addText('home_steps_title', 'Title', ['placeholder' => 'how it works']);
+		for ($i = 1; $i <= 3; $i++) {
+			$acfGroup->basicFields->addText("home_step_{$i}_title", "Step {$i} Title", ['width' => '50%']);
+			$acfGroup->contentFields->addTextEditor("home_step_{$i}_text", "Step {$i} Text", ['width' => '50%', 'media_upload' => 0]);
+		}
+
+		$acfGroup->layoutFields->addTab('home_faq_tab', 'FAQ');
+		$acfGroup->relationshipFields->addPostObject('home_faqs', 'FAQs', ['post_type' => ['faq'], 'multiple' => 1, 'allow_null' => 1, 'return_format' => 'id', 'instructions' => 'Empty shows the FAQs placed on "home".']);
+		$acfGroup->basicFields->addText('home_faq_cta_title', 'CTA Title', ['width' => '50%', 'placeholder' => 'still have a question?']);
+		$acfGroup->contentFields->addTextEditor('home_faq_cta_text', 'CTA Text', ['width' => '50%', 'media_upload' => 0]);
+
+		$acfGroup->setLocation('page_template', '==', 'templates/home.php');
+		$acfGroup->register('Home');
 	}
 
 	private static function forAboutUsPage()
@@ -85,16 +137,16 @@ class ACF
 		$acfGroup->basicFields->addText('about_values_title', 'Title', ['width' => '50%', 'default_value' => 'The values behind every job.']);
 		for ($i = 1; $i <= 4; $i++) {
 			$acfGroup->basicFields->addText("about_value_{$i}_title", "Value {$i} Title", ['width' => '50%']);
-			$acfGroup->basicFields->addText("about_value_{$i}_text", "Value {$i} Text", ['width' => '50%']);
+			$acfGroup->contentFields->addTextEditor("about_value_{$i}_text", "Value {$i} Text", ['width' => '50%', 'media_upload' => 0]);
 		}
 
 		$acfGroup->layoutFields->addTab('about_story_tab', 'Our Story');
 		$acfGroup->basicFields->addText('about_story_label', 'Label', ['width' => '50%', 'default_value' => 'OUR STORY']);
 		$acfGroup->basicFields->addText('about_story_title', 'Title', ['width' => '50%', 'default_value' => 'Built One Project at a Time.']);
-		$acfGroup->basicFields->addTextarea('about_story_text', 'Intro Text', ['rows' => '4', 'default_value' => 'Orange County Handy grew from a simple idea: make home repairs and improvements easier for homeowners. With a focus on dependable service, clear communication, and careful workmanship, the business has grown through the trust of the people it serves.']);
+		$acfGroup->contentFields->addTextEditor('about_story_text', 'Intro Text', ['media_upload' => 0, 'default_value' => 'Orange County Handy grew from a simple idea: make home repairs and improvements easier for homeowners. With a focus on dependable service, clear communication, and careful workmanship, the business has grown through the trust of the people it serves.']);
 		for ($i = 1; $i <= 4; $i++) {
 			$acfGroup->basicFields->addText("about_story_{$i}_title", "Step {$i} Title", ['width' => '50%']);
-			$acfGroup->basicFields->addTextarea("about_story_{$i}_text", "Step {$i} Text", ['rows' => '3', 'width' => '50%']);
+			$acfGroup->contentFields->addTextEditor("about_story_{$i}_text", "Step {$i} Text", ['width' => '50%', 'media_upload' => 0]);
 		}
 
 		$acfGroup->layoutFields->addTab('about_gallery_tab', 'Gallery');
@@ -115,10 +167,10 @@ class ACF
 
 		//add fields
 		$acfGroup->basicFields->addText('contact_form_title', 'Form Title', ['width' => '50%', 'placeholder' => 'send us a message']);
-		$acfGroup->basicFields->addText('contact_form_subtitle', 'Form Subtitle', ['width' => '50%', 'placeholder' => 'fill out the form below and we’ll get back to you as soon as possible']);
+		$acfGroup->contentFields->addTextEditor('contact_form_subtitle', 'Form Subtitle', ['width' => '50%', 'media_upload' => 0]);
 		$acfGroup->basicFields->addTextarea('contact_form_subjects', 'Form Subjects', ['rows' => '4', 'placeholder' => "General Question\nRequest a Quote\nSchedule a Service\nSomething Else"]);
 		$acfGroup->basicFields->addText('contact_aside_title', 'Quote Box Title', ['width' => '50%', 'placeholder' => 'Looking for a project estimate?']);
-		$acfGroup->basicFields->addText('contact_aside_text', 'Quote Box Text', ['width' => '50%', 'placeholder' => 'Tell us what you need, share a few details and request a free quote directly.']);
+		$acfGroup->contentFields->addTextEditor('contact_aside_text', 'Quote Box Text', ['width' => '50%', 'media_upload' => 0]);
 		$acfGroup->basicFields->addText('contact_quick_answers_title', 'Quick Answers Title', ['placeholder' => 'Quick Answers']);
 
 		//location
@@ -161,19 +213,19 @@ class ACF
 			'return_format' => 'value',
 			'instructions' => 'Search icons — results load 10 at a time.',
 		]);
-		$acfGroup->basicFields->addTextarea('service_hero_subtitle', 'Hero Subtitle', ['rows' => '3', 'instructions' => 'The hero image is the featured image.', 'placeholder' => 'From everyday repairs to installations and odd jobs, we take care of the projects around your home with careful, dependable workmanship.']);
+		$acfGroup->contentFields->addTextEditor('service_hero_subtitle', 'Hero Subtitle', ['media_upload' => 0, 'instructions' => 'The hero image is the featured image.', 'placeholder' => 'From everyday repairs to installations and odd jobs, we take care of the projects around your home with careful, dependable workmanship.']);
 
 		$acfGroup->layoutFields->addTab('service_help_tab', 'What We Help With');
 		$acfGroup->basicFields->addText('service_help_title', 'Title', ['placeholder' => 'what we can help with']);
 		for ($i = 1; $i <= 8; $i++) {
 			$acfGroup->basicFields->addText("service_help_{$i}_title", "Card {$i} Title", ['width' => '50%']);
-			$acfGroup->basicFields->addText("service_help_{$i}_text", "Card {$i} Text", ['width' => '50%']);
+			$acfGroup->contentFields->addTextEditor("service_help_{$i}_text", "Card {$i} Text", ['width' => '50%', 'media_upload' => 0]);
 		}
 
 		$acfGroup->layoutFields->addTab('service_about_tab', 'About');
 		$acfGroup->contentFields->addImage('service_about_image', 'Image', ['width' => '33%', 'return_format' => 'id']);
 		$acfGroup->basicFields->addText('service_about_title', 'Title', ['width' => '67%', 'placeholder' => 'Falls back to the service title']);
-		$acfGroup->basicFields->addTextarea('service_about_text', 'Text', ['rows' => '5']);
+		$acfGroup->contentFields->addTextEditor('service_about_text', 'Text', ['media_upload' => 0]);
 
 		$acfGroup->layoutFields->addTab('service_gallery_tab', 'Recent Projects');
 		$acfGroup->basicFields->addText('service_gallery_title', 'Title', ['placeholder' => 'Recent Projects']);

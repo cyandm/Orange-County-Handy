@@ -28,9 +28,9 @@ $image_id = (int) get_field('service_about_image');
 			<h2 class="text-xl lg:text-3xl font-extrabold lg:leading-14 text-cynYellow">
 				<?php echo esc_html($title); ?>
 			</h2>
-			<p class="text-base font-medium text-cynTextBlack">
-				<?php echo esc_html($text); ?>
-			</p>
+			<div class="text-base font-medium text-cynTextBlack">
+				<?php echo wp_kses_post($text); ?>
+			</div>
 		</div>
 
 	</div>

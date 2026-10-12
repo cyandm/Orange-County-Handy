@@ -30,7 +30,7 @@ $nav_btn = 'size-12 shrink-0 items-center justify-center rounded-[30px] bg-cynYe
 		<div class="flex w-full items-center gap-3">
 
 			<button type="button" class="gallery-slider-prev relative z-10 hidden <?php echo esc_attr($nav_btn); ?> lg:flex" aria-label="<?php esc_attr_e('Previous photos', 'orange-county-handy'); ?>">
-				<i class="size-3 flex items-center justify-center rotate-180 [&_svg]:size-full [&_svg]:stroke-[1.5]">
+				<i class="size-4 flex items-center justify-center rotate-180 [&_svg]:size-full [&_svg]:stroke-2">
 					<?php Icon::print('Arrow,-Right'); ?>
 				</i>
 			</button>
@@ -49,7 +49,7 @@ $nav_btn = 'size-12 shrink-0 items-center justify-center rounded-[30px] bg-cynYe
 			</div>
 
 			<button type="button" class="gallery-slider-next relative z-10 hidden <?php echo esc_attr($nav_btn); ?> lg:flex" aria-label="<?php esc_attr_e('Next photos', 'orange-county-handy'); ?>">
-				<i class="size-3 flex items-center justify-center [&_svg]:size-full [&_svg]:stroke-[1.5]">
+				<i class="size-4 flex items-center justify-center [&_svg]:size-full [&_svg]:stroke-2">
 					<?php Icon::print('Arrow,-Right'); ?>
 				</i>
 			</button>
@@ -58,12 +58,12 @@ $nav_btn = 'size-12 shrink-0 items-center justify-center rounded-[30px] bg-cynYe
 
 		<div class="flex items-center gap-3 lg:hidden">
 			<button type="button" class="gallery-slider-prev flex <?php echo esc_attr($nav_btn); ?>" aria-label="<?php esc_attr_e('Previous photos', 'orange-county-handy'); ?>">
-				<i class="size-3 flex items-center justify-center rotate-180 [&_svg]:size-full [&_svg]:stroke-[1.5]">
+				<i class="size-4 flex items-center justify-center rotate-180 [&_svg]:size-full [&_svg]:stroke-2">
 					<?php Icon::print('Arrow,-Right'); ?>
 				</i>
 			</button>
 			<button type="button" class="gallery-slider-next flex <?php echo esc_attr($nav_btn); ?>" aria-label="<?php esc_attr_e('Next photos', 'orange-county-handy'); ?>">
-				<i class="size-3 flex items-center justify-center [&_svg]:size-full [&_svg]:stroke-[1.5]">
+				<i class="size-4 flex items-center justify-center [&_svg]:size-full [&_svg]:stroke-2">
 					<?php Icon::print('Arrow,-Right'); ?>
 				</i>
 			</button>

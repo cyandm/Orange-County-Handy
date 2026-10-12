@@ -33,9 +33,9 @@ $has_image = has_post_thumbnail();
 				<?php the_title(); ?>
 			</h1>
 			<?php if ($subtitle) : ?>
-				<p class="text-xs lg:text-base font-medium lg:font-normal text-cynTextBlack">
-					<?php echo esc_html($subtitle); ?>
-				</p>
+				<div class="text-xs lg:text-base font-medium lg:font-normal text-cynTextBlack">
+					<?php echo wp_kses_post($subtitle); ?>
+				</div>
 			<?php endif; ?>
 		</div>
 		<?php Templates::getPart('services/services-buttons', ['on_yellow' => true]); ?>

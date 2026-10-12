@@ -32,9 +32,9 @@ if (! $title) return;
 	<?php if ($text) : ?>
 		<div class="grid grid-rows-[0fr] !mt-0 transition-all duration-500 lg:!grid-rows-[1fr]" data-accordion-content="<?php echo esc_attr($key); ?>">
 			<div class="overflow-hidden">
-				<p class="px-3 pb-3 text-sm font-medium text-cynTextBlack lg:pb-6">
-					<?php echo esc_html($text); ?>
-				</p>
+				<div class="px-3 pb-3 text-sm font-medium text-cynTextBlack lg:pb-6">
+					<?php echo wp_kses_post($text); ?>
+				</div>
 			</div>
 		</div>
 	<?php endif; ?>

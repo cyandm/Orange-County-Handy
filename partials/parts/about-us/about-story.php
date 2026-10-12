@@ -47,9 +47,9 @@ foreach ($defaults as $i => $default) {
 			<h2 class="text-2xl font-extrabold text-cynTextBlack lg:text-4xl lg:leading-[52px]">
 				<?php echo esc_html($title); ?>
 			</h2>
-			<p class="text-sm font-normal text-cynTextBlack lg:text-base">
-				<?php echo esc_html($text); ?>
-			</p>
+			<div class="text-sm font-normal text-cynTextBlack lg:text-base">
+				<?php echo wp_kses_post($text); ?>
+			</div>
 		</div>
 	</div>
 
@@ -70,9 +70,9 @@ foreach ($defaults as $i => $default) {
 							<h3 class="text-xl font-bold capitalize">
 								<?php echo esc_html($step['title']); ?>
 							</h3>
-							<p class="text-base font-medium capitalize">
-								<?php echo esc_html($step['text']); ?>
-							</p>
+							<div class="text-base font-medium capitalize">
+								<?php echo wp_kses_post($step['text']); ?>
+							</div>
 						</div>
 					</div>
 				<?php endforeach; ?>

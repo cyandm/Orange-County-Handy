@@ -2,7 +2,7 @@
 
 /**
  * FAQ Section — accordion of questions next to a quote CTA
- * args: faq_ids (picked FAQs) > faq_place (taxonomy slug) > latest FAQs, title, cta_title, cta_text, limit
+ * args: faq_ids (picked FAQs) > faq_place (taxonomy slug) > latest FAQs, title, cta_title, cta_text, cta_url, cta_label, limit
  * @package CyanTheme
  */
 
@@ -20,7 +20,8 @@ $title = ($args['title'] ?? '') ?: (get_option('faq_section_title') ?: __('Frequ
 $cta_title = ($args['cta_title'] ?? '') ?: (get_option('faq_cta_title') ?: __('Have a List of Jobs That Need to be done?', 'orange-county-handy'));
 $cta_text = ($args['cta_text'] ?? '') ?: (get_option('faq_cta_text') ?: __('Tell us what needs taking care of and we’ll help you get it sorted.', 'orange-county-handy'));
 
-$quote_url = Templates::getPageUrl('get-quote');
+$cta_url = ($args['cta_url'] ?? '') ?: Templates::getPageUrl('get-quote');
+$cta_label = ($args['cta_label'] ?? '') ?: __('Get a Free Quote', 'orange-county-handy');
 $phone_number = get_option('phone_number');
 ?>
 
@@ -46,15 +47,15 @@ $phone_number = get_option('phone_number');
 				<p class="text-xl lg:text-2xl font-bold capitalize text-cynTextWhite">
 					<?php echo esc_html($cta_title); ?>
 				</p>
-				<p class="text-sm lg:text-base font-medium capitalize text-cynTextWhite">
-					<?php echo esc_html($cta_text); ?>
-				</p>
+				<div class="text-sm lg:text-base font-medium capitalize text-cynTextWhite">
+					<?php echo wp_kses_post($cta_text); ?>
+				</div>
 			</div>
 
 			<div class="flex flex-col gap-3">
-				<?php if ($quote_url) : ?>
-					<a href="<?php echo esc_url($quote_url); ?>" class="primary-btn text-center">
-						<?php esc_html_e('Get a Free Quote', 'orange-county-handy'); ?>
+				<?php if ($cta_url) : ?>
+					<a href="<?php echo esc_url($cta_url); ?>" class="primary-btn text-center">
+						<?php echo esc_html($cta_label); ?>
 					</a>
 				<?php endif; ?>
 				<?php if ($phone_number) : ?>

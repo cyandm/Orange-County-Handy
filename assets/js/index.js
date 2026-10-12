@@ -19,6 +19,8 @@ import { QuoteForm } from "./functions/quoteForm";
 import { AboutStory } from "./functions/aboutPage";
 import { GallerySlider } from "./functions/gallerySlider";
 import { FaqSection } from "./functions/faqSection";
+import { CardSlider } from "./functions/cardSlider";
+import { FloatingContact } from "./functions/floatingContact";
 import fancybox from "./modules/fancybox";
 
 Modals();
@@ -38,4 +40,6 @@ QuoteForm();
 AboutStory();
 GallerySlider();
 FaqSection();
+CardSlider();
+FloatingContact();
 fancybox();

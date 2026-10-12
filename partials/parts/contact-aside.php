@@ -30,9 +30,9 @@ $socials = array_values(array_filter([
 		<p class="text-2xl font-bold capitalize text-cynTextWhite">
 			<?php echo esc_html($title); ?>
 		</p>
-		<p class="text-base font-medium capitalize text-cynTextWhite">
-			<?php echo esc_html($text); ?>
-		</p>
+		<div class="text-base font-medium capitalize text-cynTextWhite">
+			<?php echo wp_kses_post($text); ?>
+		</div>
 	</div>
 
 	<?php if ($quote_url) : ?>

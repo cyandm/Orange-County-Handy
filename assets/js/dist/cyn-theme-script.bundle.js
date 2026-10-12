@@ -20527,6 +20527,13 @@
         if (typeof dateInput.showPicker === "function") dateInput.showPicker();
       });
     }
+    const params = new URLSearchParams(window.location.search);
+    const service = form.querySelector(`[name="service"][value="${CSS.escape(params.get("service") || "")}"]`);
+    if (service) service.checked = true;
+    ["zip", "phone"].forEach((name) => {
+      const field = form.querySelector(`[name="${name}"]`);
+      if (field && params.get(name)) field.value = params.get(name);
+    });
     const total = steps.length;
     let current = 0;
     let photos = [];
@@ -24189,6 +24196,56 @@
     desktop.addEventListener("change", sync);
   }
 
+  // assets/js/functions/cardSlider.js
+  function CardSlider() {
+    document.querySelectorAll(".card-slider").forEach((section) => {
+      const el = section.querySelector(".card-slider-swiper");
+      if (!el || typeof el.initialize !== "function") return;
+      const paginationEl = section.querySelector(".card-slider-pagination");
+      Object.assign(el, {
+        slidesPerView: Number(section.dataset.perView) || 2,
+        spaceBetween: 8,
+        loop: true,
+        speed: 450,
+        breakpoints: {
+          1024: {
+            slidesPerView: Number(section.dataset.perViewLg) || 4,
+            spaceBetween: 12
+          }
+        },
+        pagination: paginationEl ? { el: paginationEl, clickable: true } : false
+      });
+      el.initialize();
+      const swiper = el.swiper;
+      if (!swiper) return;
+      const prev = section.querySelectorAll(".card-slider-prev");
+      const next = section.querySelectorAll(".card-slider-next");
+      prev.forEach((btn) => btn.addEventListener("click", () => swiper.slidePrev()));
+      next.forEach((btn) => btn.addEventListener("click", () => swiper.slideNext()));
+    });
+  }
+
+  // assets/js/functions/floatingContact.js
+  function FloatingContact() {
+    const root = document.getElementById("floating-contact");
+    if (!root) return;
+    const toggle = root.querySelector("[data-floating-toggle]");
+    const copy = root.querySelector("[data-copy]");
+    const setOpen = (open) => {
+      root.toggleAttribute("data-open", open);
+      toggle.setAttribute("aria-expanded", open);
+    };
+    toggle.addEventListener("click", () => setOpen(!root.hasAttribute("data-open")));
+    document.addEventListener("click", (event2) => !root.contains(event2.target) && setOpen(false));
+    document.addEventListener("keydown", (event2) => event2.key === "Escape" && setOpen(false));
+    copy?.addEventListener("click", () => {
+      navigator.clipboard?.writeText(copy.dataset.copy).then(() => {
+        copy.toggleAttribute("data-copied", true);
+        setTimeout(() => copy.removeAttribute("data-copied"), 1500);
+      });
+    });
+  }
+
   // assets/js/modules/fancybox.js
   function fancybox() {
     F.bind("[data-fancybox]", {
@@ -24221,6 +24278,8 @@
   AboutStory();
   GallerySlider();
   FaqSection();
+  CardSlider();
+  FloatingContact();
   fancybox();
 })();
 /*! Bundled license information:

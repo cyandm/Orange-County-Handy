@@ -11,9 +11,10 @@ $reviewer_name = get_field('reviewer_name') ?: get_the_title();
 $rating = (int) get_field('rating');
 $initial = mb_strtoupper(mb_substr(trim(wp_strip_all_tags($reviewer_name)), 0, 1));
 $content = wp_strip_all_tags(get_the_content());
+$class = get_query_var('args', [])['class'] ?? '';
 ?>
 
-<div class="mb-3 flex animate-fade-in-up break-inside-avoid cursor-pointer flex-col gap-2 rounded-2xl bg-cynBG p-3 transition-all duration-300 hover:shadow-[0_4px_9px_0_rgba(0,0,0,0.08)] lg:gap-3">
+<div class="mb-3 flex animate-fade-in-up break-inside-avoid cursor-pointer flex-col gap-2 rounded-2xl bg-cynBG p-3 transition-all duration-300 hover:shadow-[0_4px_9px_0_rgba(0,0,0,0.08)] lg:gap-3 <?php echo esc_attr($class); ?>">
 
 	<h2 class="text-sm lg:text-base font-medium capitalize text-cynTextBlack">
 		<?php the_title('&ldquo;', '&rdquo;'); ?>
