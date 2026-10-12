@@ -1,6 +1,6 @@
 {
-  "name": "cyanthemesetup",
-  "version": "0.0.0",
+  "name": "orange-county-handy",
+  "version": "1.0.0",
   "description": "A custom WordPress theme designed to provide a flexible and easy-to-use framework for developers.",
   "main": "index.php",
   "scripts": {
@@ -16,11 +16,11 @@
   "license": "GPL-2.0-or-later",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cyandm/theme-setup-main.git"
+    "url": "https://github.com/cyandm/Orange-County-Handy.git"
   },
   "homepage": "https://cyandm.com",
   "bugs": {
-    "url": "https://github.com/cyandm/theme-setup-main/issues"
+    "url": "https://github.com/cyandm/Orange-County-Handy/issues"
   },
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",
