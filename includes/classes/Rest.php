@@ -25,6 +25,7 @@ class Rest
 	{
 		self::makeRoute('/contact_form', 'POST', [__CLASS__, 'createForm']);
 		self::makeRoute('/quote_form', 'POST', [__CLASS__, 'createQuote']);
+		self::makeRoute('/quote_form/fast', 'POST', [__CLASS__, 'createFastQuote']);
 		self::makeRoute('/icon', 'GET', [__CLASS__, 'getIcon'], function () {
 			return current_user_can('edit_posts');
 		});
@@ -61,6 +62,14 @@ class Rest
 	public static function createQuote(WP_REST_Request $request)
 	{
 		$result = QuoteForm::submit($request->get_body_params(), $request->get_file_params());
+		$body = $result['success'] ? ['message' => $result['message']] : ['error' => $result['message']];
+
+		return new WP_REST_Response($body, $result['status']);
+	}
+
+	public static function createFastQuote(WP_REST_Request $request)
+	{
+		$result = QuoteForm::submitFast($request->get_body_params());
 		$body = $result['success'] ? ['message' => $result['message']] : ['error' => $result['message']];
 
 		return new WP_REST_Response($body, $result['status']);

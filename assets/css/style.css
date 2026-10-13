@@ -221,15 +221,15 @@ a {
 }
 
 .primary-btn {
-  @apply py-2 px-4 text-sm font-normal bg-cynYellow text-cynTextBlack rounded-lg border border-transparent hover:border-cynBorderHover transition-all duration-300;
+  @apply py-2 px-2 sm:px-4 text-sm font-normal bg-cynYellow text-cynTextBlack rounded-lg border border-transparent hover:border-cynBorderHover transition-all duration-300 whitespace-nowrap;
 }
 
 .secondary-btn {
-  @apply py-2 px-4 text-sm font-normal bg-cynBlack text-cynTextWhite rounded-lg hover:bg-[#2C2D35] transition-all duration-300;
+  @apply py-2 px-2 sm:px-4 text-sm font-normal bg-cynBlack text-cynTextWhite rounded-lg hover:bg-[#2C2D35] transition-all duration-300 whitespace-nowrap;
 }
 
 .tertiary-btn {
-  @apply py-2 px-4 text-sm font-normal bg-cynWhite text-cynTextBlack rounded-lg border border-cynBorder hover:border-cynBlack transition-all duration-300;
+  @apply py-2 px-2 sm:px-4 text-sm font-normal bg-cynWhite text-cynTextBlack rounded-lg border border-cynBorder hover:border-cynBlack transition-all duration-300 whitespace-nowrap;
 }
 
 .btn-have-icon {
@@ -237,6 +237,11 @@ a {
 }
 
 /*-------submit button loading state (htmx .is-loading)---------*/
+/* the idle label keeps its space so the button never resizes, the loader is laid over it */
+.submit-form-btn {
+  position: relative;
+}
+
 .submit-form-btn.is-loading {
   pointer-events: none;
   opacity: 0.8;
@@ -247,11 +252,14 @@ a {
 }
 
 .submit-form-btn.is-loading .submit-form-btn__idle {
-  display: none;
+  visibility: hidden;
 }
 
 .submit-form-btn.is-loading .submit-form-btn__loading {
-  display: inline-flex;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
 }
 
 /*-------loading-dots: . .. ... ..---------*/

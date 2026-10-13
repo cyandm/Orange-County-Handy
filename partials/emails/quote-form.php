@@ -19,6 +19,7 @@ $photos = array_filter((array) ($args['_photos'] ?? []));
 $edit_url = $args['edit_url'] ?? '';
 
 $rows = array_filter([
+	['label' => __('Source', 'orange-county-handy'), 'value' => $args['_source'] ?? '', 'href' => ''],
 	['label' => __('Name', 'orange-county-handy'), 'value' => $name, 'href' => ''],
 	['label' => __('Email', 'orange-county-handy'), 'value' => $email, 'href' => $email ? 'mailto:' . $email : ''],
 	['label' => __('Phone', 'orange-county-handy'), 'value' => $phone, 'href' => $phone ? 'tel:' . preg_replace('/[^0-9+]/', '', $phone) : ''],

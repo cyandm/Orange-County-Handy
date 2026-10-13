@@ -11,7 +11,7 @@
 define( 'THEME_DIR', get_template_directory() );
 define( 'THEME_URI', get_template_directory_uri() );
 define( 'THEME_VERSION', '1.0.0' );
-define( 'ENVIRONMENT', 'development' ); //development, production
+define( 'ENVIRONMENT', 'production' ); //development, production
 define( 'THEME_SLUG', 'cyn-theme' );
 define( 'THEME_NAME', 'Cyan Theme' );
 

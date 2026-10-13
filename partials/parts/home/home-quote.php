@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Home Quote — short quote form (service, zip, phone) that opens the full quote wizard prefilled
+ * Home Quote — fast quote form (service, zip, phone) sent with htmx as a quote_form request
  * @package CyanTheme
  */
 
@@ -17,8 +17,7 @@ $image_id = (int) get_field('home_quote_image');
 $title = get_field('home_quote_title') ?: __('get a fast quote', 'orange-county-handy');
 $note = get_field('home_quote_note') ?: __('Have photos or more details to share? Use our full quote form.', 'orange-county-handy');
 
-// A GET form drops the action's own query string (plain permalinks), so it is resent as hidden fields
-parse_str((string) parse_url($quote_url, PHP_URL_QUERY), $quote_query);
+$form_url = rest_url('cyn/v1/quote_form/fast');
 ?>
 
 <section id="home-quote" class="container">
@@ -38,17 +37,23 @@ parse_str((string) parse_url($quote_url, PHP_URL_QUERY), $quote_query);
 				<?php echo esc_html($title); ?>
 			</h2>
 
-			<form action="<?php echo esc_url($quote_url); ?>" method="get" class="flex flex-col gap-3 rounded-lg bg-cynBG p-2.5">
-
-				<?php foreach ($quote_query as $key => $value) : ?>
-					<input type="hidden" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr($value); ?>">
-				<?php endforeach; ?>
+			<form
+				id="home_quote_form"
+				action="<?php echo esc_url($form_url); ?>"
+				method="post"
+				hx-post="<?php echo esc_url($form_url); ?>"
+				hx-headers='{"X-WP-Nonce":"<?php echo esc_attr(wp_create_nonce('wp_rest')); ?>"}'
+				hx-swap="none"
+				hx-disabled-elt="find button[type=submit]"
+				hx-on::before-request="const btn = event.target.querySelector('button[type=submit]'); if (btn) btn.classList.add('is-loading'); const result = document.querySelector('#home_quote_result'); if (result) { result.hidden = true; result.textContent = ''; }"
+				hx-on::after-request="const btn = event.target.querySelector('button[type=submit]'); if (btn) btn.classList.remove('is-loading'); const result = document.querySelector('#home_quote_result'); if (!result) return; const ok = event.detail.successful; let msg = ''; try { const data = JSON.parse(event.detail.xhr.responseText); msg = data.message || data.error || ''; } catch (e) { msg = ''; } if (!msg) msg = ok ? '<?php echo esc_js(__('Thanks! Your request has been sent, we will call you shortly.', 'orange-county-handy')); ?>' : '<?php echo esc_js(__('Something went wrong. Please try again.', 'orange-county-handy')); ?>'; result.textContent = msg; result.classList.toggle('bg-cynYellow', ok); result.classList.toggle('bg-cynRed', !ok); result.classList.toggle('text-cynTextBlack', ok); result.classList.toggle('text-cynTextWhite', !ok); result.hidden = false; if (ok) event.target.reset();"
+				class="flex flex-col gap-3 rounded-lg bg-cynBG p-2.5">
 
 				<div class="flex flex-col gap-2">
 
 					<?php if ($services) : ?>
 						<label class="secondary-input relative !p-0" for="home-quote-service">
-							<select id="home-quote-service" name="service" class="!px-4 !py-2.5 !pe-11 text-sm">
+							<select id="home-quote-service" name="service" class="!px-4 !py-2.5 !pe-11 text-sm" required>
 								<option value="">
 									<?php esc_html_e('What can we help you with?', 'orange-county-handy'); ?>
 								</option>
@@ -66,10 +71,10 @@ parse_str((string) parse_url($quote_url, PHP_URL_QUERY), $quote_query);
 
 					<div class="flex items-center gap-2">
 						<label class="secondary-input min-w-0 flex-1 lg:max-w-64" for="home-quote-zip">
-							<input id="home-quote-zip" name="zip" type="text" inputmode="numeric" pattern="\d{5}(-\d{4})?" maxlength="10" autocomplete="postal-code" placeholder="<?php esc_attr_e('zip code', 'orange-county-handy'); ?>" aria-label="<?php esc_attr_e('zip code', 'orange-county-handy'); ?>">
+							<input id="home-quote-zip" name="zip" type="text" inputmode="numeric" pattern="\d{5}(-\d{4})?" maxlength="10" autocomplete="postal-code" placeholder="<?php esc_attr_e('zip code', 'orange-county-handy'); ?>" aria-label="<?php esc_attr_e('zip code', 'orange-county-handy'); ?>" required>
 						</label>
 						<label class="secondary-input min-w-0 flex-1" for="home-quote-phone">
-							<input id="home-quote-phone" name="phone" type="tel" autocomplete="tel" placeholder="<?php esc_attr_e('phone number', 'orange-county-handy'); ?>" aria-label="<?php esc_attr_e('phone number', 'orange-county-handy'); ?>">
+							<input id="home-quote-phone" name="phone" type="tel" autocomplete="tel" placeholder="<?php esc_attr_e('phone number', 'orange-county-handy'); ?>" aria-label="<?php esc_attr_e('phone number', 'orange-county-handy'); ?>" required>
 						</label>
 					</div>
 
@@ -80,13 +85,25 @@ parse_str((string) parse_url($quote_url, PHP_URL_QUERY), $quote_query);
 				</div>
 
 				<div class="flex items-center gap-2">
-					<button type="submit" class="primary-btn">
-						<?php esc_html_e('Request my Quote', 'orange-county-handy'); ?>
+					<button type="submit" class="submit-form-btn primary-btn">
+						<span class="submit-form-btn__idle">
+							<?php esc_html_e('Request my Quote', 'orange-county-handy'); ?>
+						</span>
+						<span class="submit-form-btn__loading items-center gap-2">
+							<i class="size-5 flex animate-spin items-center justify-center [&_svg]:size-full [&_svg]:stroke-[1.5]">
+								<?php Icon::print('Rotate,-Refresh,-Loading'); ?>
+							</i>
+							<span>
+								<?php esc_html_e('sending...', 'orange-county-handy'); ?>
+							</span>
+						</span>
 					</button>
 					<a href="<?php echo esc_url($quote_url); ?>" class="tertiary-btn !border-cynBorderHover">
 						<?php esc_html_e('full quote form', 'orange-county-handy'); ?>
 					</a>
 				</div>
+
+				<p id="home_quote_result" class="rounded-lg px-3 py-2 text-sm font-medium" role="status" aria-live="polite" hidden></p>
 
 			</form>
 

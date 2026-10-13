@@ -176,11 +176,11 @@ class Register
 		$args = [
 			'labels' => $labels,
 			'public' => true,
-			'publicly_queryable' => $has_single,
+			'publicly_queryable' => $has_single || $has_archive,
 			'show_ui' => true,
 			'show_in_menu' => true,
 			'query_var' => true,
-			'rewrite' => $has_single ? ['slug' => $slug] : false,
+			'rewrite' => $has_single || $has_archive ? ['slug' => $slug] : false,
 			'exclude_from_search' => ! $search_include,
 			'has_archive' => $has_archive,
 			'hierarchical' => false,

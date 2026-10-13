@@ -80,21 +80,9 @@ class QuoteForm
 	 */
 	public static function submit($data, $files = [])
 	{
-		$ip = self::getClientIp();
-		$rate_key = 'cyn_quote_last_' . md5($ip);
-		$last_time = get_transient($rate_key);
+		$limited = self::rateLimitError('full');
 
-		if ($last_time !== false && (time() - $last_time) < self::MIN_INTERVAL) {
-			$wait = self::MIN_INTERVAL - (time() - $last_time);
-			return self::result(false, sprintf(__('Please wait %d seconds before sending another request.', 'orange-county-handy'), $wait), 429);
-		}
-
-		$count_key = 'cyn_quote_count_' . md5($ip);
-		$count_data = get_transient($count_key) ?: ['count' => 0, 'start' => time()];
-
-		if ($count_data['count'] >= self::MAX_PER_HOUR) {
-			return self::result(false, __('You have reached the sending limit for this hour. Please try again later.', 'orange-county-handy'), 429);
-		}
+		if ($limited) return $limited;
 
 		$service_id = isset($data['service']) ? (int) $data['service'] : 0;
 		$service = $service_id ? get_post($service_id) : null;
@@ -178,13 +166,101 @@ class QuoteForm
 			return self::result(false, __('The request could not be sent. Please try again.', 'orange-county-handy'), 500);
 		}
 
-		set_transient($rate_key, time(), self::MIN_INTERVAL);
-		$count_data['count']++;
-		set_transient($count_key, $count_data, HOUR_IN_SECONDS);
-
+		self::recordSubmission('full');
 		self::notify(array_merge($meta, ['edit_url' => admin_url('post.php?post=' . $new_post . '&action=edit')]));
 
 		return self::result(true, __('Thanks! Your request has been sent, we will get back to you shortly.', 'orange-county-handy'), 200);
+	}
+
+	/**
+	 * Validate, store and notify a fast quote request (service, zip and phone only)
+	 * @param array $data raw (unslashed) form data
+	 * @return array{success: bool, message: string, status: int}
+	 */
+	public static function submitFast($data)
+	{
+		$limited = self::rateLimitError('fast');
+
+		if ($limited) return $limited;
+
+		$service_id = isset($data['service']) ? (int) $data['service'] : 0;
+		$service = $service_id ? get_post($service_id) : null;
+
+		if (! $service || $service->post_type !== 'service' || $service->post_status !== 'publish') {
+			return self::result(false, __('Please choose the service you need.', 'orange-county-handy'), 400);
+		}
+
+		$zip = isset($data['zip']) ? sanitize_text_field($data['zip']) : '';
+		$phone = isset($data['phone']) ? sanitize_text_field($data['phone']) : '';
+		$phone_digits = preg_replace('/\D/', '', $phone);
+
+		if (! preg_match('/^\d{5}(-\d{4})?$/', $zip)) {
+			return self::result(false, __('Please enter a valid zip code.', 'orange-county-handy'), 400);
+		}
+
+		if (strlen($phone_digits) < 10 || strlen($phone_digits) > 15) {
+			return self::result(false, __('Please enter a valid phone number.', 'orange-county-handy'), 400);
+		}
+
+		$meta = ['_service' => $service->post_title, '_service_id' => $service->ID, '_zip' => $zip, '_phone' => $phone, '_source' => __('Fast Quote', 'orange-county-handy')];
+
+		$new_post = wp_insert_post(['post_type' => 'quote_form', 'post_title' => $phone . ' — ' . $service->post_title, 'post_status' => FormStatuses::defaultStatus('quote_form'), 'meta_input' => $meta]);
+
+		if (is_wp_error($new_post)) {
+			return self::result(false, __('The request could not be sent. Please try again.', 'orange-county-handy'), 500);
+		}
+
+		self::recordSubmission('fast');
+		self::notify(array_merge($meta, ['_name' => $phone, '_email' => '', 'edit_url' => admin_url('post.php?post=' . $new_post . '&action=edit')]));
+
+		return self::result(true, __('Thanks! Your request has been sent, we will call you shortly.', 'orange-county-handy'), 200);
+	}
+
+	/**
+	 * Ip limits per form: a minimum interval and a maximum per hour, the fast and full forms are counted separately
+	 * @param string $form 'full' or 'fast'
+	 * @return array|null error result, null when the request is allowed
+	 */
+	private static function rateLimitError($form)
+	{
+		$ip_hash = self::rateKey($form);
+		$last_time = get_transient('cyn_quote_last_' . $ip_hash);
+
+		if ($last_time !== false && (time() - $last_time) < self::MIN_INTERVAL) {
+			$wait = self::MIN_INTERVAL - (time() - $last_time);
+			return self::result(false, sprintf(__('Please wait %d seconds before sending another request.', 'orange-county-handy'), $wait), 429);
+		}
+
+		$count_data = get_transient('cyn_quote_count_' . $ip_hash) ?: ['count' => 0, 'start' => time()];
+
+		if ($count_data['count'] >= self::MAX_PER_HOUR) {
+			return self::result(false, __('You have reached the sending limit for this hour. Please try again later.', 'orange-county-handy'), 429);
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param string $form 'full' or 'fast'
+	 * @return void
+	 */
+	private static function recordSubmission($form)
+	{
+		$ip_hash = self::rateKey($form);
+		$count_data = get_transient('cyn_quote_count_' . $ip_hash) ?: ['count' => 0, 'start' => time()];
+		$count_data['count']++;
+
+		set_transient('cyn_quote_last_' . $ip_hash, time(), self::MIN_INTERVAL);
+		set_transient('cyn_quote_count_' . $ip_hash, $count_data, HOUR_IN_SECONDS);
+	}
+
+	/**
+	 * @param string $form 'full' or 'fast'
+	 * @return string
+	 */
+	private static function rateKey($form)
+	{
+		return md5($form . '|' . self::getClientIp());
 	}
 
 	/**

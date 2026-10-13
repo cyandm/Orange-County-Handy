@@ -89,6 +89,7 @@ class Meta
 
         add_meta_box('quote_form_information', __('Quote Request', 'orange-county-handy'), function () {
             $meta_group = [
+                ['name' => '_source', 'label' => __('Source:', 'orange-county-handy')],
                 ['name' => '_service', 'label' => __('Service:', 'orange-county-handy')],
                 ['name' => '_zip', 'label' => __('Zip Code:', 'orange-county-handy')],
                 ['name' => '_property_type', 'label' => __('Property Type:', 'orange-county-handy')],
@@ -111,6 +112,7 @@ class Meta
     {
         $columns['name'] = __('Name', 'orange-county-handy');
         $columns['service'] = __('Service', 'orange-county-handy');
+        $columns['zip'] = __('Zip Code', 'orange-county-handy');
         $columns['phone'] = __('Phone', 'orange-county-handy');
         $columns['email'] = __('Email', 'orange-county-handy');
         $columns['timeframe'] = __('Timeframe', 'orange-county-handy');
@@ -120,7 +122,7 @@ class Meta
 
     public static function quote_form_table_column($column_name, $post_id)
     {
-        if (in_array($column_name, ['name', 'service', 'phone', 'email', 'timeframe'], true)) {
+        if (in_array($column_name, ['name', 'service', 'zip', 'phone', 'email', 'timeframe'], true)) {
             echo esc_html(get_post_meta($post_id, '_' . $column_name, true));
         }
 

@@ -46,7 +46,7 @@ $has_contact = $phone_number || $service_areas || $instagram_link || $email_addr
 									<span class="text-base font-medium text-cynTextWhite">
 										<?php esc_html_e('Our Numbers', 'orange-county-handy'); ?>
 									</span>
-									<a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $phone_number)); ?>" class="text-sm font-normal text-cynTextWhite transition-all duration-300 hover:text-cynYellow">
+									<a href="tel:<?php echo esc_attr(preg_replace('/[^0-9+]/', '', $phone_number)); ?>" class="text-sm font-normal text-cynTextWhite transition-all duration-300 hover:text-cynYellow whitespace-nowrap">
 										<?php echo esc_html($phone_number); ?>
 									</a>
 								</div>
