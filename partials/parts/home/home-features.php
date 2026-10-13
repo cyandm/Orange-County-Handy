@@ -42,11 +42,11 @@ foreach ($defaults as $i => $feature) {
 
 	<div class="mx-auto hidden items-stretch gap-6 rounded-3xl bg-cynBG p-3 shadow-[0_4px_9px_0_rgba(0,0,0,0.08)] lg:flex">
 		<?php foreach ($features as $feature) : ?>
-			<div class="flex w-56 flex-col items-center justify-center gap-3.5 rounded-2xl border border-cynBorder p-6">
+			<div class="flex w-56 flex-col items-center justify-between gap-3.5 rounded-2xl border border-cynBorder p-6">
 				<i class="size-6 flex shrink-0 items-center justify-center text-cynYellow [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
 					<?php Icon::print($feature['icon']); ?>
 				</i>
-				<span class="text-center text-base font-semibold text-cynTextBlack">
+				<span class="text-center text-base font-semibold text-cynTextBlack min-h-12 flex items-center justify-center">
 					<?php echo esc_html($feature['title']); ?>
 				</span>
 			</div>
