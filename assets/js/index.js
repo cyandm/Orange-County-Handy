@@ -21,6 +21,7 @@ import { GallerySlider } from "./functions/gallerySlider";
 import { FaqSection } from "./functions/faqSection";
 import { CardSlider } from "./functions/cardSlider";
 import { FloatingContact } from "./functions/floatingContact";
+import { HomeAbout } from "./functions/homeAbout";
 import fancybox from "./modules/fancybox";
 
 Modals();
@@ -42,4 +43,5 @@ GallerySlider();
 FaqSection();
 CardSlider();
 FloatingContact();
+HomeAbout();
 fancybox();

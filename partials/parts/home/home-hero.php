@@ -27,7 +27,7 @@ if ($highlight) $title_html = preg_replace('/' . preg_quote(esc_html($highlight)
 
 	<div class="container relative flex flex-col gap-3 pt-3 lg:gap-5 lg:pt-10 lg:pb-32">
 		<div class="flex flex-col gap-1 lg:max-w-[620px] lg:gap-0">
-			<h1 class="text-2xl lg:text-4xl font-extrabold leading-8 lg:leading-[52px] text-cynTextBlack">
+			<h1 class="text-2xl lg:text-4xl font-extrabold leading-8 lg:leading-[52px] text-cynTextBlack capitalize">
 				<?php echo wp_kses($title_html, ['span' => ['class' => []]]); ?>
 			</h1>
 			<?php if ($text) : ?>

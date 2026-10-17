@@ -28,7 +28,7 @@ $band = "before:absolute before:inset-y-0 before:-inset-x-4 before:-z-10 before:
 				<span class="text-7xl lg:text-9xl font-semibold leading-none text-cynTextBlack">
 					<?php echo esc_html(str_pad((string) $i, 2, '0', STR_PAD_LEFT)); ?>
 				</span>
-				<div class="relative isolate z-[1] -mt-6 flex w-full flex-1 flex-col items-center gap-2 pt-6 pb-8 text-center lg:-mt-[46px] lg:pt-10 lg:pb-16 <?php echo esc_attr($band); ?> <?php echo $i > 1 ? 'lg:before:hidden' : ''; ?>">
+				<div class="relative isolate z-[1] -mt-7 flex w-full flex-1 flex-col items-center gap-2 pt-6 pb-8 text-center lg:-mt-[54px] lg:pt-10 lg:pb-16 <?php echo esc_attr($band); ?> <?php echo $i > 1 ? 'lg:before:hidden' : ''; ?>">
 					<h3 class="max-w-44 text-base font-semibold text-cynTextBlack lg:max-w-36">
 						<?php echo esc_html(get_field("home_step_{$i}_title") ?: $step['title']); ?>
 					</h3>

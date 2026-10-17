@@ -481,7 +481,30 @@ a {
   overflow: visible;
 }
 
-/* Lets card hover shadows show, the wrapping div clips the sides instead */
+/* Fanned stack: transform-only motion (no filter transition — that causes hitching) */
+.home-about-photos::part(container),
+.home-about-photos::part(wrapper) {
+  overflow: visible;
+}
+
+.home-about-photos swiper-slide {
+  background-color: #fff;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.home-about-photos swiper-slide img {
+  filter: grayscale(1);
+}
+
+.home-about-photos .swiper-slide-active {
+  z-index: 2;
+}
+
+.home-about-photos .swiper-slide-active img {
+  filter: grayscale(0);
+}
+
 .card-slider-swiper::part(container) {
   overflow: visible;
 }
