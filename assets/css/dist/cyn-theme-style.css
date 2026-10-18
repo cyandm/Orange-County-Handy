@@ -1652,10 +1652,10 @@
       inset-block: calc(var(--spacing) * 0);
     }
   }
-  .before\:start-\[22\%\] {
+  .before\:start-\[var\(--service-hero-before-start\)\] {
     &::before {
       content: var(--tw-content);
-      inset-inline-start: 22%;
+      inset-inline-start: var(--service-hero-before-start);
     }
   }
   .before\:-end-\[100vw\] {
@@ -2114,14 +2114,6 @@
   .md\:text-\[40px\] {
     @media (width >= 48rem) {
       font-size: 40px;
-    }
-  }
-  .md\:before\:start-\[20\%\] {
-    @media (width >= 48rem) {
-      &::before {
-        content: var(--tw-content);
-        inset-inline-start: 20%;
-      }
     }
   }
   .md\:before\:-bottom-6 {
@@ -2957,27 +2949,6 @@
       &::before {
         content: var(--tw-content);
         display: none;
-      }
-    }
-  }
-  .\32 xl\:bg-none {
-    @media (width >= 96rem) {
-      background-image: none;
-    }
-  }
-  .\32 xl\:before\:start-\[40\%\] {
-    @media (width >= 96rem) {
-      &::before {
-        content: var(--tw-content);
-        inset-inline-start: 40%;
-      }
-    }
-  }
-  .\32 xl\:before\:block {
-    @media (width >= 96rem) {
-      &::before {
-        content: var(--tw-content);
-        display: block;
       }
     }
   }

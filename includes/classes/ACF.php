@@ -214,7 +214,8 @@ class ACF
 			'instructions' => 'Search icons — results load 10 at a time.',
 		]);
 		$acfGroup->contentFields->addTextEditor('service_hero_subtitle', 'Hero Subtitle', ['media_upload' => 0, 'instructions' => 'The hero image is the featured image.', 'placeholder' => 'From everyday repairs to installations and odd jobs, we take care of the projects around your home with careful, dependable workmanship.']);
-		$acfGroup->basicFields->addRange('service_hero_yellow_split', 'Hero Yellow Split', ['default_value' => 60, 'min' => 40, 'max' => 80, 'step' => 1, 'append' => '%', 'instructions' => 'How far solid yellow extends from the left before light yellow (XL, when a featured image is set). Default 60%.']);
+		$acfGroup->choiceFields->addBoolean('service_hero_two_tone', 'Two-tone Yellow', ['default_value' => 1, 'ui_on_text' => 'On', 'ui_off_text' => 'Off', 'instructions' => 'Off = solid yellow. On = yellow + light yellow split (set below).', 'width' => '30%']);
+		$acfGroup->basicFields->addRange('service_hero_yellow_split', 'Hero Yellow Split', ['default_value' => 60, 'min' => 30, 'max' => 90, 'step' => 1, 'append' => '%', 'width' => '70%', 'instructions' => 'How far solid yellow extends from the left before light yellow. Default 60%.', 'conditional_logic' => [[['field' => 'acf_true_false_service_hero_two_tone_', 'operator' => '==', 'value' => '1']]]]);
 
 		$acfGroup->layoutFields->addTab('service_help_tab', 'What We Help With');
 		$acfGroup->basicFields->addText('service_help_title', 'Title', ['placeholder' => 'what we can help with']);

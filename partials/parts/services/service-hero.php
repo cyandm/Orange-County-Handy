@@ -9,16 +9,20 @@ use Cyan\Theme\Helpers\Templates;
 
 $subtitle = get_field('service_hero_subtitle');
 $has_image = has_post_thumbnail();
-$yellow_split = max(40, min(80, (int) (get_field('service_hero_yellow_split') ?: 60)));
+$two_tone_raw = get_field('service_hero_two_tone');
+$two_tone = $has_image && ($two_tone_raw === null || $two_tone_raw === '' ? true : (bool) $two_tone_raw);
+$yellow_split = max(30, min(90, (int) (get_field('service_hero_yellow_split') ?: 60)));
+$before_start = max(0, min(100, (int) round(($yellow_split - 50) * 2)));
+$hero_style = $two_tone ? '--service-hero-yellow-split:' . $yellow_split . '%;--service-hero-before-start:' . $before_start . '%' : '';
 ?>
 
-<section id="service-hero" class="relative">
+<section id="service-hero" class="relative" <?php echo $hero_style ? 'style="' . esc_attr($hero_style) . '"' : ''; ?>>
 
 	<div class="overflow-hidden md:absolute md:inset-0 md:block md:h-auto <?php echo $has_image ? 'relative h-[203px]' : 'hidden'; ?>">
-		<span class="absolute inset-0 bg-cynYellow <?php echo $has_image ? 'xl:bg-[linear-gradient(to_right,var(--color-cynYellow)_var(--service-hero-yellow-split),var(--color-cynYellowLight)_var(--service-hero-yellow-split))] 2xl:bg-none' : ''; ?>" <?php echo $has_image ? 'style="--service-hero-yellow-split:' . esc_attr((string) $yellow_split) . '%"' : ''; ?> aria-hidden="true"></span>
+		<span class="absolute inset-0 bg-cynYellow <?php echo $two_tone ? 'xl:bg-[linear-gradient(to_right,var(--color-cynYellow)_var(--service-hero-yellow-split),var(--color-cynYellowLight)_var(--service-hero-yellow-split))]' : ''; ?>" aria-hidden="true"></span>
 		<?php if ($has_image) : ?>
 			<div class="container relative h-full">
-				<div class="absolute isolate end-4 top-0 h-48 w-72 before:absolute before:top-0 before:-bottom-[11px] before:start-[22%] before:-end-[100vw] before:-z-10 before:bg-cynYellowLight before:content-[''] md:bottom-6 md:h-auto md:w-1/2 md:before:-bottom-6 md:before:start-[20%] lg:bottom-8 lg:before:-bottom-8 xl:before:hidden 2xl:before:block 2xl:before:start-[40%]">
+				<div class="absolute isolate end-4 top-0 h-48 w-72 md:bottom-6 md:h-auto md:w-1/2 lg:bottom-8 <?php echo $two_tone ? "before:absolute before:top-0 before:-bottom-[11px] before:start-[var(--service-hero-before-start)] before:-end-[100vw] before:-z-10 before:bg-cynYellowLight before:content-[''] md:before:-bottom-6 lg:before:-bottom-8 xl:before:hidden" : ''; ?>">
 					<?php the_post_thumbnail('large', ['class' => 'size-full object-contain object-right-top', 'alt' => esc_attr(get_the_title())]); ?>
 				</div>
 			</div>
