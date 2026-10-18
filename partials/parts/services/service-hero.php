@@ -9,12 +9,13 @@ use Cyan\Theme\Helpers\Templates;
 
 $subtitle = get_field('service_hero_subtitle');
 $has_image = has_post_thumbnail();
+$yellow_split = max(40, min(80, (int) (get_field('service_hero_yellow_split') ?: 60)));
 ?>
 
 <section id="service-hero" class="relative">
 
 	<div class="overflow-hidden md:absolute md:inset-0 md:block md:h-auto <?php echo $has_image ? 'relative h-[203px]' : 'hidden'; ?>">
-		<span class="absolute inset-0 bg-cynYellow <?php echo $has_image ? 'xl:bg-linear-to-r xl:from-cynYellow xl:from-60% xl:to-cynYellowLight xl:to-60% 2xl:bg-none' : ''; ?>" aria-hidden="true"></span>
+		<span class="absolute inset-0 bg-cynYellow <?php echo $has_image ? 'xl:bg-[linear-gradient(to_right,var(--color-cynYellow)_var(--service-hero-yellow-split),var(--color-cynYellowLight)_var(--service-hero-yellow-split))] 2xl:bg-none' : ''; ?>" <?php echo $has_image ? 'style="--service-hero-yellow-split:' . esc_attr((string) $yellow_split) . '%"' : ''; ?> aria-hidden="true"></span>
 		<?php if ($has_image) : ?>
 			<div class="container relative h-full">
 				<div class="absolute isolate end-4 top-0 h-48 w-72 before:absolute before:top-0 before:-bottom-[11px] before:start-[22%] before:-end-[100vw] before:-z-10 before:bg-cynYellowLight before:content-[''] md:bottom-6 md:h-auto md:w-1/2 md:before:-bottom-6 md:before:start-[20%] lg:bottom-8 lg:before:-bottom-8 xl:before:hidden 2xl:before:block 2xl:before:start-[40%]">

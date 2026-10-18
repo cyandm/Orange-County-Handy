@@ -10,9 +10,9 @@ use Cyan\Theme\Helpers\Icon;
 $title = get_field('home_features_title') ?: __('why Choose us for Handyman services?', 'orange-county-handy');
 
 $defaults = [
-	1 => ['icon' => 'invoice-checkmark', 'title' => __('Free Estimates', 'orange-county-handy')],
+	1 => ['icon' => 'list-house', 'title' => __('Free Estimates', 'orange-county-handy')],
 	2 => ['icon' => 'builder-checkmark', 'title' => __('Craftsmanship Warranty', 'orange-county-handy')],
-	3 => ['icon' => 'Shield,-Protected,-Checkmark', 'title' => __('Fully Insured', 'orange-county-handy')],
+	3 => ['icon' => 'Star,-Check-mark', 'title' => __('Fully Insured', 'orange-county-handy')],
 ];
 
 $features = [];
