@@ -17,6 +17,8 @@ class ThemeInit {
 		self::$isDev = ENVIRONMENT === 'development';
 		self::$version = self::$isDev ? time() : THEME_VERSION;
 
+		add_action( 'after_setup_theme', [ __CLASS__, 'loadTextDomain' ] );
+
 		//Initialize theme
 		add_action( 'init', [ __CLASS__, 'removeUnnecessaryAssets' ] );
 
@@ -32,6 +34,10 @@ class ThemeInit {
 
 		//Allow SVG
 		self::allowSvg();
+	}
+
+	public static function loadTextDomain() {
+		load_theme_textdomain( 'orange-county-handy', get_template_directory() . '/languages' );
 	}
 
 	public static function removeUnnecessaryAssets() {

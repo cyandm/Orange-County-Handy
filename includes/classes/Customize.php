@@ -71,6 +71,11 @@ JS
 		self::registerPanelInformation();
 	}
 
+	/** @return bool */
+	private static function canUseTelegramTestControl() {
+		return class_exists( 'WP_Customize_Control' );
+	}
+
 	private static function addControl( $section, $type, $id, $label, $description = '' ) {
 
 		$sanitize = 'sanitize_text_field';
@@ -118,53 +123,24 @@ JS
 	}
 
 	private static function registerPanelCustomCode() {
-		self::$wpCustomize->add_panel(
-			'custom_code',
-			[ 
-				'title' => 'تنظیمات کدهای سفارشی',
-				'priority' => 1
-			]
-		);
+		self::$wpCustomize->add_panel('custom_code', ['title' => __('Custom code settings', 'orange-county-handy'), 'priority' => 1]);
 
-		self::$wpCustomize->add_section(
-			'head_section',
-			[ 
-				'title' => 'داخل تگ head',
-				'priority' => 1,
-				'panel' => 'custom_code'
-			]
-		);
-
+		self::$wpCustomize->add_section('head_section', ['title' => __('Inside head tag', 'orange-county-handy'), 'priority' => 1, 'panel' => 'custom_code']);
 
 		for ( $i = 1; $i <= 10; $i++ ) {
-			self::addControl( 'head_section', 'textarea', "cyn_head_code_$i", "کد سفارشی $i" );
+			self::addControl('head_section', 'textarea', "cyn_head_code_$i", sprintf(__('Custom code %d', 'orange-county-handy'), $i));
 		}
 
-		self::$wpCustomize->add_section(
-			'start_body_section',
-			[ 
-				'title' => 'ابتدای تگ body',
-				'priority' => 1,
-				'panel' => 'custom_code'
-			]
-		);
+		self::$wpCustomize->add_section('start_body_section', ['title' => __('Start of body tag', 'orange-county-handy'), 'priority' => 1, 'panel' => 'custom_code']);
 
 		for ( $i = 1; $i <= 10; $i++ ) {
-			self::addControl( 'start_body_section', 'textarea', "cyn_start_body_code_$i", "کد سفارشی $i" );
+			self::addControl('start_body_section', 'textarea', "cyn_start_body_code_$i", sprintf(__('Custom code %d', 'orange-county-handy'), $i));
 		}
 
-
-		self::$wpCustomize->add_section(
-			'end_body_section',
-			[ 
-				'title' => 'انتهای تگ body',
-				'priority' => 1,
-				'panel' => 'custom_code'
-			]
-		);
+		self::$wpCustomize->add_section('end_body_section', ['title' => __('End of body tag', 'orange-county-handy'), 'priority' => 1, 'panel' => 'custom_code']);
 
 		for ( $i = 1; $i <= 10; $i++ ) {
-			self::addControl( 'end_body_section', 'textarea', "cyn_end_body_code_$i", "کد سفارشی $i" );
+			self::addControl('end_body_section', 'textarea', "cyn_end_body_code_$i", sprintf(__('Custom code %d', 'orange-county-handy'), $i));
 		}
 	}
 
@@ -191,13 +167,15 @@ JS
 		self::addControl('address_section', 'text', 'receiver_form_email', 'Forms Recipient', 'Contact and quote form submissions are sent here, falls back to the Email above');
 		self::addControl('address_section', 'text', 'telegram_bot_token', 'Telegram Bot Token', 'From @BotFather. When both token and User ID are set, every form submission is also sent to Telegram.');
 		self::addControl('address_section', 'text', 'telegram_user_id', 'Telegram User ID', 'Numeric chat ID that receives notifications. Start a chat with your bot first so it can message you.');
-		self::$wpCustomize->add_setting('telegram_test_button', ['type' => 'option', 'default' => '', 'sanitize_callback' => '__return_empty_string']);
-		self::$wpCustomize->add_control(new TelegramTestControl(self::$wpCustomize, 'telegram_test_button', [
-			'label' => __('Telegram test', 'orange-county-handy'),
-			'description' => __('Sends a test message with the Token and User ID currently entered above (Publish not required).', 'orange-county-handy'),
-			'section' => 'address_section',
-			'settings' => 'telegram_test_button',
-		]));
+		if ( self::canUseTelegramTestControl() ) {
+			self::$wpCustomize->add_setting('telegram_test_button', ['type' => 'option', 'default' => '', 'sanitize_callback' => '__return_empty_string']);
+			self::$wpCustomize->add_control(new TelegramTestControl(self::$wpCustomize, 'telegram_test_button', [
+				'label' => __('Telegram test', 'orange-county-handy'),
+				'description' => __('Sends a test message with the Token and User ID currently entered above (Publish not required).', 'orange-county-handy'),
+				'section' => 'address_section',
+				'settings' => 'telegram_test_button',
+			]));
+		}
 		self::addControl('address_section', 'text', 'service_areas', 'Service Areas');
 		self::addControl('address_section', 'text', 'work_hours', 'Work Hours', 'e.g. Mon - Sat: 7:00 AM - 7:00 PM');
 		self::addControl('address_section', 'text', 'copyright_text', 'Copyright Text');
@@ -219,30 +197,5 @@ JS
 		self::addControl('faq_section', 'text', 'faq_section_title', 'FAQ Title', 'Default title, pages can override it');
 		self::addControl('faq_section', 'text', 'faq_cta_title', 'CTA Title');
 		self::addControl('faq_section', 'textarea', 'faq_cta_text', 'CTA Text');
-	}
-}
-
-/**
- * Customizer control: Telegram test button
- */
-class TelegramTestControl extends \WP_Customize_Control {
-
-	public $type = 'cyn_telegram_test';
-
-	public function render_content() {
-		?>
-		<?php if ( ! empty( $this->label ) ) : ?>
-			<span class="customize-control-title"><?php echo esc_html( $this->label ); ?></span>
-		<?php endif; ?>
-		<?php if ( ! empty( $this->description ) ) : ?>
-			<span class="description customize-control-description"><?php echo esc_html( $this->description ); ?></span>
-		<?php endif; ?>
-		<p style="margin: 8px 0 0;">
-			<button type="button" class="button button-secondary" id="cyn-telegram-test-btn">
-				<?php esc_html_e( 'Send test message', 'orange-county-handy' ); ?>
-			</button>
-		</p>
-		<p id="cyn-telegram-test-result" style="margin: 8px 0 0;" aria-live="polite"></p>
-		<?php
 	}
 }

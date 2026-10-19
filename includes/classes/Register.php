@@ -140,7 +140,7 @@ class Register
 	public static function registerTerm()
 	{
 
-		// wp_insert_term( 'دسته بندی جدید', 'category' );
+		// wp_insert_term( 'New category', 'category' );
 	}
 
 	/**
@@ -150,9 +150,9 @@ class Register
 	 */
 	public static function registerPage()
 	{
-		// self::makePage('home', 'خانه');
-		// self::makePage('about-us', 'درباره ما');
-		// self::makePage('contact-us', 'تماس با ما');
+		// self::makePage('home', 'Home');
+		// self::makePage('about-us', 'About Us');
+		// self::makePage('contact-us', 'Contact Us');
 	}
 
 	private static function makePostType($slug, $singular_name, $plural_name, $icon, $supports = ['title', 'thumbnail'], $search_include = true, $has_single = true, $has_archive = true)

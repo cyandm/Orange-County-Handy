@@ -25,7 +25,7 @@ $cta_label = ($args['cta_label'] ?? '') ?: __('Get a Free Quote', 'orange-county
 $phone_number = get_option('phone_number');
 ?>
 
-<section class="faq-section container flex flex-col gap-3 lg:gap-6">
+<section id="faq-section" class="faq-section container flex flex-col gap-3 lg:gap-6">
 
 	<h2 class="text-center text-xl lg:text-3xl font-extrabold capitalize text-cynTextBlack">
 		<?php echo esc_html($title); ?>

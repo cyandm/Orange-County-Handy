@@ -15,7 +15,6 @@ class Meta
     protected static $unread_badge_config = [
         'contact_form' => ['read_meta' => '_read'],
         'quote_form' => ['read_meta' => '_read'],
-        'order_form' => ['read_meta' => '_read'],
     ];
 
     public static function init()
@@ -25,14 +24,8 @@ class Meta
         add_action('add_meta_boxes', [__CLASS__, 'add_form_status_meta_box']);
         add_filter('manage_quote_form_posts_columns', [__CLASS__, 'quote_form_table_head']);
         add_action('manage_quote_form_posts_custom_column', [__CLASS__, 'quote_form_table_column'], 10, 2);
-        add_action('add_meta_boxes', [__CLASS__, 'add_order_form_meta_box']);
         add_filter('manage_contact_form_posts_columns', [__CLASS__, 'form_table_head']);
         add_action('manage_contact_form_posts_custom_column', [__CLASS__, 'form_table_column'], 10, 2);
-        add_filter('manage_order_form_posts_columns', [__CLASS__, 'order_form_table_head']);
-        add_action('manage_order_form_posts_custom_column', [__CLASS__, 'order_form_table_column'], 10, 2);
-        add_action('add_meta_boxes', [__CLASS__, 'add_support_form_meta_box']);
-        add_filter('manage_support_form_posts_columns', [__CLASS__, 'support_form_table_head']);
-        add_action('manage_support_form_posts_custom_column', [__CLASS__, 'support_form_table_column'], 10, 2);
         add_action('load-post.php', [__CLASS__, 'markCurrentPostAsRead']);
         add_action('admin_menu', [__CLASS__, 'addUnreadCountToMenu'], 999);
         add_action('save_post_quote_form', [__CLASS__, 'saveFormStatus'], 10, 2);
@@ -174,86 +167,6 @@ class Meta
             printf('<span class="form-status form-status--%1$s">%2$s</span>', esc_attr($slug), esc_html(FormStatuses::label('quote_form', $status)));
         }
     }
-
-    public static function add_order_form_meta_box()
-    {
-        global $post;
-        if ($post->post_type !== 'order_form') {
-            return;
-        }
-        add_meta_box('order_form_information', __('اطلاعات فرم سفارش', 'orange-county-handy'), function () {
-            $meta_group = [
-                ['name' => '_organization_name', 'label' => __('نام سازمان', 'orange-county-handy')],
-                ['name' => '_product_type', 'label' => __('نوع کالا', 'orange-county-handy')],
-                ['name' => '_quantity', 'label' => __('تعداد مورد نیاز', 'orange-county-handy')],
-                ['name' => '_phone', 'label' => __('شماره تماس', 'orange-county-handy')],
-            ];
-            include get_template_directory() . '/partials/parts/metabox.php';
-        }, null, 'advanced', 'high');
-    }
-
-    public static function order_form_table_head($columns)
-    {
-        $columns['organization_name'] = __('نام سازمان', 'orange-county-handy');
-        $columns['product_type'] = __('نوع کالا', 'orange-county-handy');
-        $columns['quantity'] = __('تعداد', 'orange-county-handy');
-        $columns['phone'] = __('شماره تماس', 'orange-county-handy');
-        return $columns;
-    }
-
-    public static function order_form_table_column($column_name, $post_id)
-    {
-        if ($column_name === 'organization_name') {
-            echo esc_html(get_post_meta($post_id, '_organization_name', true));
-        }
-        if ($column_name === 'product_type') {
-            echo esc_html(get_post_meta($post_id, '_product_type', true));
-        }
-        if ($column_name === 'quantity') {
-            echo esc_html(get_post_meta($post_id, '_quantity', true));
-        }
-        if ($column_name === 'phone') {
-            echo esc_html(get_post_meta($post_id, '_phone', true));
-        }
-    }
-
-    public static function add_support_form_meta_box()
-    {
-        global $post;
-        if ($post->post_type !== 'support_form') {
-            return;
-        }
-        add_meta_box('support_form_information', __('اطلاعات فرم پشتیبانی', 'orange-county-handy'), function () {
-            $meta_group = [
-                ['name' => '_name', 'label' => __('نام', 'orange-county-handy')],
-                ['name' => '_phone', 'label' => __('شماره تماس', 'orange-county-handy')],
-                ['name' => '_message', 'label' => __('پیام', 'orange-county-handy')],
-            ];
-            include get_template_directory() . '/partials/parts/metabox.php';
-        }, null, 'advanced', 'high');
-    }
-
-    public static function support_form_table_head($columns)
-    {
-        $columns['name'] = __('نام', 'orange-county-handy');
-        $columns['phone'] = __('شماره تماس', 'orange-county-handy');
-        $columns['message'] = __('پیام', 'orange-county-handy');
-        return $columns;
-    }
-
-    public static function support_form_table_column($column_name, $post_id)
-    {
-        if ($column_name === 'name') {
-            echo esc_html(get_post_meta($post_id, '_name', true));
-        }
-        if ($column_name === 'phone') {
-            echo esc_html(get_post_meta($post_id, '_phone', true));
-        }
-        if ($column_name === 'message') {
-            echo esc_html(get_post_meta($post_id, '_message', true));
-        }
-    }
-
 
     /**
      * Mark current post as read when admin opens it (for post types in unread_badge_config).

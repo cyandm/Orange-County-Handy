@@ -11,7 +11,17 @@ class FormStatuses
 {
 
 	/**
-	 * @return array<string, array{default: string, migrate_option: string, filter: string, statuses: array<string, string>}>
+	 * Post types that use custom form statuses (no translations — safe before init)
+	 * @return array<int, string>
+	 */
+	private static function postTypes()
+	{
+		return ['quote_form', 'contact_form'];
+	}
+
+	/**
+	 * Status labels stay as English msgids here; translate in statuses() / register() at init+
+	 * @return array<string, array{default: string, seen: string, unsent: string, migrate_option: string, filter: string, statuses: array<string, string>}>
 	 */
 	private static function configs()
 	{
@@ -23,12 +33,12 @@ class FormStatuses
 				'migrate_option' => 'cyn_quote_status_migrated',
 				'filter' => 'quote_status',
 				'statuses' => [
-					'quote-unread' => __('Unread', 'orange-county-handy'),
-					'quote-unsend' => __('Unsend', 'orange-county-handy'),
-					'quote-under-review' => __('Under Review', 'orange-county-handy'),
-					'quote-coordinated' => __('Reviewed & Coordinated', 'orange-county-handy'),
-					'quote-completed' => __('Completed', 'orange-county-handy'),
-					'quote-cancelled' => __('Cancelled', 'orange-county-handy'),
+					'quote-unread' => 'Unread',
+					'quote-unsend' => 'Unsend',
+					'quote-under-review' => 'Under Review',
+					'quote-coordinated' => 'Reviewed & Coordinated',
+					'quote-completed' => 'Completed',
+					'quote-cancelled' => 'Cancelled',
 				],
 			],
 			'contact_form' => [
@@ -38,12 +48,12 @@ class FormStatuses
 				'migrate_option' => 'cyn_contact_status_migrated',
 				'filter' => 'contact_status',
 				'statuses' => [
-					'contact-unread' => __('Unread', 'orange-county-handy'),
-					'contact-unsend' => __('Unsend', 'orange-county-handy'),
-					'contact-awaiting' => __('Awaiting Response', 'orange-county-handy'),
-					'contact-contacted' => __('Reviewed & Contacted', 'orange-county-handy'),
-					'contact-no-answer' => __('No Answer', 'orange-county-handy'),
-					'contact-spam' => __('Spam', 'orange-county-handy'),
+					'contact-unread' => 'Unread',
+					'contact-unsend' => 'Unsend',
+					'contact-awaiting' => 'Awaiting Response',
+					'contact-contacted' => 'Reviewed & Contacted',
+					'contact-no-answer' => 'No Answer',
+					'contact-spam' => 'Spam',
 				],
 			],
 		];
@@ -59,7 +69,7 @@ class FormStatuses
 		add_action('restrict_manage_posts', [__CLASS__, 'filterDropdown']);
 		add_filter('parse_query', [__CLASS__, 'filterQuery']);
 
-		foreach (array_keys(self::configs()) as $post_type) {
+		foreach (self::postTypes() as $post_type) {
 			add_filter('views_edit-' . $post_type, fn($views) => self::views($views, $post_type));
 			add_filter('bulk_actions-edit-' . $post_type, fn($actions) => self::bulkActions($actions, $post_type));
 			add_filter('handle_bulk_actions-edit-' . $post_type, fn($redirect, $action, $ids) => self::handleBulkActions($redirect, $action, $ids, $post_type), 10, 3);
@@ -100,7 +110,13 @@ class FormStatuses
 	 */
 	public static function statuses($post_type)
 	{
-		return self::configs()[$post_type]['statuses'] ?? [];
+		$statuses = self::configs()[$post_type]['statuses'] ?? [];
+
+		foreach ($statuses as $slug => $label) {
+			$statuses[$slug] = __($label, 'orange-county-handy');
+		}
+
+		return $statuses;
 	}
 
 	/**
@@ -142,7 +158,7 @@ class FormStatuses
 		foreach (self::configs() as $config) {
 			foreach ($config['statuses'] as $slug => $label) {
 				register_post_status($slug, [
-					'label' => $label,
+					'label' => __($label, 'orange-county-handy'),
 					'label_count' => _n_noop($label . ' <span class="count">(%s)</span>', $label . ' <span class="count">(%s)</span>', 'orange-county-handy'),
 					'public' => false,
 					'internal' => false,
