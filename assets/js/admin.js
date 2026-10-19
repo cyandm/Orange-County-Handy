@@ -46,6 +46,15 @@
       const $field = $select.closest(".acf-field[data-name='service_icon']");
       if (!$field.length) return args;
 
+      // Keep the saved <option> visible after reload (AJAX Select2 otherwise shows "Select")
+      const selected = String($select.val() || "");
+      const hasOption = $select.find("option").toArray().some(function (option) {
+        return option.value === selected;
+      });
+      if (selected && !hasOption) {
+        $select.append(new Option(selected, selected, true, true));
+      }
+
       args.ajax = {
         url: restUrl + "cyn/v1/icons",
         dataType: "json",

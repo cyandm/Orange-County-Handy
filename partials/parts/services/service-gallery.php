@@ -15,4 +15,4 @@ for ($i = 1; $i <= 8; $i++) {
 
 $title = get_field('service_gallery_title') ?: __('Recent Projects', 'orange-county-handy');
 
-Templates::getPart('gallery-slider', ['ids' => $ids, 'title' => $title, 'title_size' => 'text-xl']);
+Templates::getPart('gallery-slider', ['ids' => $ids, 'title' => $title, 'title_size' => 'text-xl', 'gray' => true]);

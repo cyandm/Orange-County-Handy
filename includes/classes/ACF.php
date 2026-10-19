@@ -25,23 +25,39 @@ class ACF
 
 
 		add_action('acf/include_fields', [__CLASS__, 'registerAllACF']);
-		add_filter('acf/load_field/name=service_icon', [__CLASS__, 'loadServiceIconField']);
+		// prepare_field (not load_field): value is available so Select2 can show the saved icon after reload
+		add_filter('acf/prepare_field/name=service_icon', [__CLASS__, 'prepareServiceIconField']);
 	}
 
 	/**
-	 * Keep only the saved icon in choices; the rest load 10-at-a-time via AJAX
+	 * Put the saved icon into choices so Select2 does not reset to "Select" on edit reload.
+	 * Other icons still load 10-at-a-time via AJAX in admin.js.
 	 * @param array $field
 	 * @return array
 	 */
-	public static function loadServiceIconField($field)
+	public static function prepareServiceIconField($field)
 	{
 		$value = $field['value'] ?? '';
-		if ($value === '' && ! empty($field['default_value'])) {
+
+		// load_field often has no value yet; fall back to post meta on the edit screen
+		if (($value === '' || $value === null) && function_exists('acf_get_valid_post_id')) {
+			$post_id = acf_get_valid_post_id();
+			if ($post_id) {
+				$stored = get_post_meta($post_id, 'service_icon', true);
+				if (is_string($stored) && $stored !== '') $value = $stored;
+			}
+		}
+
+		if (($value === '' || $value === null) && ! empty($field['default_value'])) {
 			$value = $field['default_value'];
 		}
-		$field['choices'] = $value ? [$value => $value] : [];
+
+		$value = is_string($value) ? $value : '';
+		$field['choices'] = $value !== '' ? [$value => $value] : [];
 		$field['ui'] = 1;
 		$field['ajax'] = 1;
+
+		if ($value !== '') $field['value'] = $value;
 
 		return $field;
 	}
