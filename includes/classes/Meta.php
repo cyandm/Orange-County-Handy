@@ -22,6 +22,7 @@ class Meta
     {
         add_action('add_meta_boxes', [__CLASS__, 'add_form_meta_box']);
         add_action('add_meta_boxes', [__CLASS__, 'add_quote_form_meta_box']);
+        add_action('add_meta_boxes', [__CLASS__, 'add_form_status_meta_box']);
         add_filter('manage_quote_form_posts_columns', [__CLASS__, 'quote_form_table_head']);
         add_action('manage_quote_form_posts_custom_column', [__CLASS__, 'quote_form_table_column'], 10, 2);
         add_action('add_meta_boxes', [__CLASS__, 'add_order_form_meta_box']);
@@ -34,6 +35,47 @@ class Meta
         add_action('manage_support_form_posts_custom_column', [__CLASS__, 'support_form_table_column'], 10, 2);
         add_action('load-post.php', [__CLASS__, 'markCurrentPostAsRead']);
         add_action('admin_menu', [__CLASS__, 'addUnreadCountToMenu'], 999);
+        add_action('save_post_quote_form', [__CLASS__, 'saveFormStatus'], 10, 2);
+        add_action('save_post_contact_form', [__CLASS__, 'saveFormStatus'], 10, 2);
+    }
+
+    public static function add_form_status_meta_box()
+    {
+        global $post;
+
+        if (! $post || ! FormStatuses::config($post->post_type)) return;
+
+        $post_type = $post->post_type;
+
+        add_meta_box('form_status_box', __('Status', 'orange-county-handy'), static function () use ($post_type) {
+            include get_template_directory() . '/partials/parts/metabox-status.php';
+        }, $post_type, 'side', 'high');
+    }
+
+    /**
+     * Save manual status from the Status metabox
+     * @param int $post_id
+     * @param \WP_Post $post
+     * @return void
+     */
+    public static function saveFormStatus($post_id, $post)
+    {
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+        if (wp_is_post_revision($post_id)) return;
+        if (! current_user_can('edit_post', $post_id)) return;
+        if (! isset($_POST['cyn_form_status'], $_POST['cyn_form_status_nonce'])) return;
+        if (! wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['cyn_form_status_nonce'])), 'cyn_form_status_' . $post_id)) return;
+
+        $status = sanitize_key(wp_unslash($_POST['cyn_form_status']));
+        $statuses = FormStatuses::statuses($post->post_type);
+
+        if (! isset($statuses[$status]) || $post->post_status === $status) return;
+
+        remove_action('save_post_quote_form', [__CLASS__, 'saveFormStatus'], 10);
+        remove_action('save_post_contact_form', [__CLASS__, 'saveFormStatus'], 10);
+        wp_update_post(['ID' => (int) $post_id, 'post_status' => $status]);
+        add_action('save_post_quote_form', [__CLASS__, 'saveFormStatus'], 10, 2);
+        add_action('save_post_contact_form', [__CLASS__, 'saveFormStatus'], 10, 2);
     }
 
     public static function add_form_meta_box()
@@ -241,9 +283,13 @@ class Meta
     public static function getUnreadCount($post_type, $read_meta_key = '_read')
     {
         if (FormStatuses::config($post_type)) {
+            $attention = [FormStatuses::defaultStatus($post_type), 'private'];
+            $unsent = FormStatuses::unsentStatus($post_type);
+            if ($unsent) $attention[] = $unsent;
+
             $query = new \WP_Query([
                 'post_type' => $post_type,
-                'post_status' => [FormStatuses::defaultStatus($post_type), 'private'],
+                'post_status' => $attention,
                 'posts_per_page' => -1,
                 'fields' => 'ids',
                 'no_found_rows' => true,

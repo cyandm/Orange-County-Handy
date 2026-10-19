@@ -27,7 +27,10 @@ class Setup {
 		Meta::init();
 
 		FormStatuses::init();
+
+		FormNotify::init();
 	}
 }
+
 
 

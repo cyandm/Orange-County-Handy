@@ -82,28 +82,51 @@ class ContactForm
 		$count_data['count']++;
 		set_transient($count_key, $count_data, HOUR_IN_SECONDS);
 
-		self::notify(['name' => $name, 'email' => $email, 'phone' => $phone, 'subject' => $subject, 'message' => $message, 'edit_url' => admin_url('post.php?post=' . $new_post . '&action=edit')]);
+		FormNotify::queue((int) $new_post, 'contact');
 
-		return self::result(true, __('Thanks! Your message has been sent.', 'orange-county-handy'), 200);
+		return self::result(true, __('Thanks! Your message has been submitted.', 'orange-county-handy'), 200);
+	}
+
+	/**
+	 * Send email + Telegram for a stored contact message (called from background queue)
+	 * @param int $post_id
+	 * @return void
+	 */
+	public static function deliverNotifications($post_id)
+	{
+		$post_id = (int) $post_id;
+		$post = get_post($post_id);
+
+		if (! $post || $post->post_type !== 'contact_form') return;
+
+		$payload = [
+			'name' => (string) get_post_meta($post_id, '_name', true),
+			'email' => (string) get_post_meta($post_id, '_email', true),
+			'phone' => (string) get_post_meta($post_id, '_phone', true),
+			'subject' => (string) get_post_meta($post_id, '_subject', true),
+			'message' => (string) get_post_meta($post_id, '_message', true),
+			'edit_url' => admin_url('post.php?post=' . $post_id . '&action=edit'),
+		];
+
+		if (get_post_meta($post_id, '_email_sent', true) === '') {
+			FormMail::applyResult($post_id, 'contact_form', self::notify($payload));
+		}
+
+		if (get_post_meta($post_id, '_telegram_sent', true) === '') {
+			TelegramBot::applyResult($post_id, TelegramBot::notifyContact($payload));
+		}
 	}
 
 	/**
 	 * Email the submission to the site owner
 	 * @param array $data submitted values
-	 * @return void
+	 * @return array{ok: bool, error: string, to: string}
 	 */
 	private static function notify($data)
 	{
-		$to = get_option('receiver_form_email') ?: get_option('contact_form_email') ?: get_option('email_address') ?: get_option('admin_email');
+		$subject = sprintf(__('New contact message from %s', 'orange-county-handy'), $data['name'] ?? '');
 
-		if (! is_email($to)) return;
-
-		$subject = sprintf(__('New contact message from %s', 'orange-county-handy'), $data['name']);
-		$headers = ['Content-Type: text/html; charset=UTF-8'];
-
-		if (is_email($data['email'])) $headers[] = 'Reply-To: ' . $data['name'] . ' <' . $data['email'] . '>';
-
-		wp_mail($to, $subject, Templates::getEmail('contact-form', $data), $headers);
+		return FormMail::send(FormMail::recipient(), $subject, Templates::getEmail('contact-form', $data), $data['name'] ?? '', $data['email'] ?? '');
 	}
 
 	private static function result($success, $message, $status)
@@ -112,24 +135,13 @@ class ContactForm
 	}
 
 	/**
-	 * Get client IP address
+	 * Client IP for rate limiting — REMOTE_ADDR only (forwarded headers are spoofable)
 	 * @return string
 	 */
 	private static function getClientIp()
 	{
-		$ip_keys = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
+		$ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
-		foreach ($ip_keys as $key) {
-			if (array_key_exists($key, $_SERVER) === true) {
-				foreach (explode(',', $_SERVER[$key]) as $ip) {
-					$ip = trim($ip);
-					if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) {
-						return $ip;
-					}
-				}
-			}
-		}
-
-		return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
+		return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '0.0.0.0';
 	}
 }

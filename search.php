@@ -43,7 +43,33 @@ get_header(); ?>
 
 			<div class="container grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-3">
 				<?php while (have_posts()) : the_post(); ?>
-					<?php if (get_post_type() === 'post') Templates::getCard('blog'); ?>
+					<?php
+					$type = get_post_type();
+					if ($type === 'post') {
+						Templates::getCard('blog');
+					} elseif ($type === 'service') {
+						Templates::getCard('service', ['service' => get_the_ID(), 'class' => 'p-8']);
+					} else {
+						?>
+						<a href="<?php the_permalink(); ?>" class="flex flex-col gap-2 rounded-2xl bg-cynBG p-5 transition-all duration-300 hover:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)]">
+							<span class="w-fit rounded-lg bg-cynYellowLight/30 px-2.5 py-1 text-[10px] font-semibold uppercase text-cynYellow">
+								<?php
+								$pto = get_post_type_object($type);
+								echo esc_html($pto->labels->singular_name ?? $type);
+								?>
+							</span>
+							<span class="text-base font-semibold text-cynTextBlack">
+								<?php the_title(); ?>
+							</span>
+							<?php if (has_excerpt() || get_the_content()) : ?>
+								<span class="text-sm font-normal text-cynTextGray line-clamp-3">
+									<?php echo esc_html(wp_trim_words(get_the_excerpt() ?: wp_strip_all_tags(get_the_content()), 24)); ?>
+								</span>
+							<?php endif; ?>
+						</a>
+						<?php
+					}
+					?>
 				<?php endwhile; ?>
 			</div>
 
@@ -58,7 +84,9 @@ get_header(); ?>
 				<?php echo $query_term ? esc_html(sprintf(__('No results for “%s”', 'orange-county-handy'), $query_term)) : esc_html__('No results found', 'orange-county-handy'); ?>
 			</p>
 			<p class="max-w-md text-sm lg:text-base font-normal text-cynTextGray">
-				<?php esc_html_e('Nothing matched your search. Try another keyword, or browse all articles.', 'orange-county-handy'); ?>
+				<?php echo $is_blog_search
+					? esc_html__('Nothing matched your search. Try another keyword, or browse all articles.', 'orange-county-handy')
+					: esc_html__('Nothing matched your search. Try another keyword.', 'orange-county-handy'); ?>
 			</p>
 			<?php if ($is_blog_search) : ?>
 				<?php

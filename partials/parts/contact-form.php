@@ -39,7 +39,6 @@ $form_url = rest_url('cyn/v1/contact_form');
 		action="<?php echo esc_url($form_url); ?>"
 		method="post"
 		hx-post="<?php echo esc_url($form_url); ?>"
-		hx-headers='{"X-WP-Nonce":"<?php echo esc_attr(wp_create_nonce('wp_rest')); ?>"}'
 		hx-swap="none"
 		hx-disabled-elt="find button[type=submit]"
 		hx-on::before-request="const btn = event.target.querySelector('button[type=submit]'); if (btn) btn.classList.add('is-loading'); const result = document.querySelector('#contact_form_result'); if (result) { result.hidden = true; result.textContent = ''; }"

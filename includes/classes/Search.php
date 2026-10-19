@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Search: filter by search-type (all / shop / blog).
+ * Search: filter by search-type (all / post / service).
  *
  * @package Cyan\Theme\Classes
  */
@@ -31,7 +31,7 @@ class Search
 	}
 
 	/**
-	 * Filter search query by search-type (all / product / post).
+	 * Filter search query by search-type (all / post / service).
 	 *
 	 * @param \WP_Query $query
 	 */
@@ -40,16 +40,20 @@ class Search
 		if (is_admin() || ! $query->is_main_query() || ! $query->is_search()) {
 			return;
 		}
+
 		$type = isset($_GET['search-type']) ? sanitize_text_field(wp_unslash($_GET['search-type'])) : '';
-		if ($type === 'product') {
-			$query->set('post_type', 'product');
-		} elseif ($type === 'post') {
+
+		if ($type === 'post') {
 			$query->set('post_type', 'post');
-		} else {
-			// "All": only products and blog; products first, then posts
-			$query->set('post_type', ['product', 'post']);
-			$query->set('orderby', 'post_type');
-			$query->set('order', 'DESC');
+			return;
 		}
+
+		if ($type === 'service') {
+			$query->set('post_type', 'service');
+			return;
+		}
+
+		// "All" (header search): site content types that should be discoverable
+		$query->set('post_type', ['post', 'service', 'page', 'faq']);
 	}
 }

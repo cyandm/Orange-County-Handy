@@ -19,10 +19,12 @@ class FormStatuses
 			'quote_form' => [
 				'default' => 'quote-unread',
 				'seen' => 'quote-under-review',
+				'unsent' => 'quote-unsend',
 				'migrate_option' => 'cyn_quote_status_migrated',
 				'filter' => 'quote_status',
 				'statuses' => [
 					'quote-unread' => __('Unread', 'orange-county-handy'),
+					'quote-unsend' => __('Unsend', 'orange-county-handy'),
 					'quote-under-review' => __('Under Review', 'orange-county-handy'),
 					'quote-coordinated' => __('Reviewed & Coordinated', 'orange-county-handy'),
 					'quote-completed' => __('Completed', 'orange-county-handy'),
@@ -32,10 +34,12 @@ class FormStatuses
 			'contact_form' => [
 				'default' => 'contact-unread',
 				'seen' => 'contact-awaiting',
+				'unsent' => 'contact-unsend',
 				'migrate_option' => 'cyn_contact_status_migrated',
 				'filter' => 'contact_status',
 				'statuses' => [
 					'contact-unread' => __('Unread', 'orange-county-handy'),
+					'contact-unsend' => __('Unsend', 'orange-county-handy'),
 					'contact-awaiting' => __('Awaiting Response', 'orange-county-handy'),
 					'contact-contacted' => __('Reviewed & Contacted', 'orange-county-handy'),
 					'contact-no-answer' => __('No Answer', 'orange-county-handy'),
@@ -78,6 +82,16 @@ class FormStatuses
 	public static function defaultStatus($post_type)
 	{
 		return self::configs()[$post_type]['default'] ?? 'private';
+	}
+
+	/**
+	 * Status used when the notification email could not be sent
+	 * @param string $post_type
+	 * @return string
+	 */
+	public static function unsentStatus($post_type)
+	{
+		return self::configs()[$post_type]['unsent'] ?? '';
 	}
 
 	/**
@@ -173,16 +187,19 @@ class FormStatuses
 		foreach ($config['statuses'] as $slug => $label) {
 			$statuses[] = ['value' => $slug, 'label' => $label];
 		}
-		?>
+?>
 		<script>
-			jQuery(function ($) {
+			jQuery(function($) {
 				var statuses = <?php echo wp_json_encode($statuses); ?>;
 				var current = <?php echo wp_json_encode($current); ?>;
 				var $select = $('#post-status-select select#post_status');
 				if (!$select.length) return;
 				$select.empty();
-				statuses.forEach(function (status) {
-					$select.append($('<option/>', { value: status.value, text: status.label }));
+				statuses.forEach(function(status) {
+					$select.append($('<option/>', {
+						value: status.value,
+						text: status.label
+					}));
 				});
 				$select.val(current);
 				$('#post-status-display').text($select.find('option:selected').text());
@@ -190,7 +207,7 @@ class FormStatuses
 				$('#publish').val(<?php echo wp_json_encode(__('Update', 'orange-county-handy')); ?>);
 			});
 		</script>
-		<?php
+	<?php
 	}
 
 	public static function bulkEditScript()
@@ -208,19 +225,22 @@ class FormStatuses
 		foreach ($config['statuses'] as $slug => $label) {
 			$statuses[] = ['value' => $slug, 'label' => $label];
 		}
-		?>
+	?>
 		<script>
-			jQuery(function ($) {
+			jQuery(function($) {
 				var statuses = <?php echo wp_json_encode($statuses); ?>;
 				var $status = $('select[name="_status"]');
 				if (!$status.length) return;
 				$status.find('option').not('[value="-1"]').remove();
-				statuses.forEach(function (status) {
-					$status.append($('<option/>', { value: status.value, text: status.label }));
+				statuses.forEach(function(status) {
+					$status.append($('<option/>', {
+						value: status.value,
+						text: status.label
+					}));
 				});
 			});
 		</script>
-		<?php
+	<?php
 	}
 
 	/**
@@ -265,7 +285,7 @@ class FormStatuses
 		if (! $config) return;
 
 		$current = sanitize_key($_GET[$config['filter']] ?? '');
-		?>
+	?>
 		<select name="<?php echo esc_attr($config['filter']); ?>">
 			<option value=""><?php esc_html_e('All statuses', 'orange-county-handy'); ?></option>
 			<?php foreach ($config['statuses'] as $slug => $label) : ?>
@@ -274,7 +294,7 @@ class FormStatuses
 				</option>
 			<?php endforeach; ?>
 		</select>
-		<?php
+<?php
 	}
 
 	public static function filterQuery($query)

@@ -26,7 +26,7 @@ $form_url = rest_url('cyn/v1/quote_form');
 
 <div id="quote_wizard" class="mx-auto w-full max-w-[900px]">
 
-	<form id="quote_form" action="<?php echo esc_url($form_url); ?>" method="post" enctype="multipart/form-data" hx-post="<?php echo esc_url($form_url); ?>" hx-encoding="multipart/form-data" hx-headers='{"X-WP-Nonce":"<?php echo esc_attr(wp_create_nonce('wp_rest')); ?>"}' hx-swap="none" hx-disabled-elt="find button[type=submit]" class="flex flex-col gap-5 rounded-2xl bg-cynBG p-3">
+	<form id="quote_form" action="<?php echo esc_url($form_url); ?>" method="post" enctype="multipart/form-data" hx-post="<?php echo esc_url($form_url); ?>" hx-encoding="multipart/form-data" hx-swap="none" hx-disabled-elt="find button[type=submit]" class="flex flex-col gap-5 rounded-2xl bg-cynBG p-3">
 
 		<div data-quote-progress class="flex flex-col gap-3">
 
@@ -147,7 +147,7 @@ $form_url = rest_url('cyn/v1/quote_form');
 					</span>
 
 					<label id="quote-dropzone" for="quote-photos" class="flex cursor-pointer flex-col items-center justify-center gap-2.5 rounded-2xl border border-cynBorder bg-cynBgBase px-6 py-4 transition-all duration-300 hover:border-cynBorderHover data-[state=over]:border-cynYellow data-[state=over]:bg-cynYellowLight">
-						<input id="quote-photos" name="photos[]" type="file" accept="image/jpeg,image/png,image/webp" multiple class="sr-only" data-remove-label="<?php esc_attr_e('Remove photo', 'orange-county-handy'); ?>">
+						<input id="quote-photos" name="photos[]" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif,image/avif,.heic,.heif,.avif" multiple class="sr-only" data-remove-label="<?php esc_attr_e('Remove photo', 'orange-county-handy'); ?>">
 						<span class="flex items-start gap-2">
 							<i class="size-10 flex shrink-0 items-center justify-center text-cynTextBlack [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
 								<?php Icon::print('Cloud,-Upload'); ?>

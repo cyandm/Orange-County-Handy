@@ -20500,7 +20500,24 @@
   // assets/js/functions/quoteForm.js
   var MAX_FILES = 8;
   var MAX_SIZE = 10 * 1024 * 1024;
-  var ALLOWED = ["image/jpeg", "image/png", "image/webp"];
+  var ALLOWED_MIME = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "image/heic",
+    "image/heif",
+    "image/heic-sequence",
+    "image/heif-sequence",
+    "image/avif"
+  ];
+  var ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif", "heic", "heif", "avif"];
+  var isAllowedPhoto = (photo) => {
+    if (photo.size > MAX_SIZE) return false;
+    if (ALLOWED_MIME.includes(photo.type)) return true;
+    const ext = (photo.name.split(".").pop() || "").toLowerCase();
+    return ALLOWED_EXT.includes(ext) && (!photo.type || photo.type === "application/octet-stream" || photo.type.startsWith("image/"));
+  };
   function QuoteForm() {
     const wizard = document.querySelector("#quote_wizard");
     const form = document.querySelector("#quote_form");
@@ -20645,7 +20662,7 @@
     const addPhotos = (list) => {
       [...list].forEach((photo) => {
         if (photos.length >= MAX_FILES) return;
-        if (!ALLOWED.includes(photo.type) || photo.size > MAX_SIZE) return;
+        if (!isAllowedPhoto(photo)) return;
         photos.push(photo);
       });
       syncInput();

@@ -26,12 +26,31 @@ class Rest
 		self::makeRoute('/contact_form', 'POST', [__CLASS__, 'createForm']);
 		self::makeRoute('/quote_form', 'POST', [__CLASS__, 'createQuote']);
 		self::makeRoute('/quote_form/fast', 'POST', [__CLASS__, 'createFastQuote']);
+		self::makeRoute('/form-notify', 'POST', [FormNotify::class, 'handleRest']);
 		self::makeRoute('/icon', 'GET', [__CLASS__, 'getIcon'], function () {
 			return current_user_can('edit_posts');
 		});
 		self::makeRoute('/icons', 'GET', [__CLASS__, 'searchIcons'], function () {
 			return current_user_can('edit_posts');
 		});
+		self::makeRoute('/telegram/test', 'POST', [__CLASS__, 'testTelegram'], function () {
+			return current_user_can('customize');
+		});
+	}
+
+	public static function testTelegram(WP_REST_Request $request)
+	{
+		$token = sanitize_text_field((string) ($request->get_param('token') ?: ''));
+		$chat_id = sanitize_text_field((string) ($request->get_param('chat_id') ?: ''));
+		$result = TelegramBot::sendTest($token !== '' ? $token : null, $chat_id !== '' ? $chat_id : null);
+
+		if (! empty($result['ok'])) {
+			return new WP_REST_Response(['message' => __('Test message sent. Check Telegram.', 'orange-county-handy')], 200);
+		}
+
+		$error = $result['error'] !== '' ? $result['error'] : __('Test failed.', 'orange-county-handy');
+
+		return new WP_REST_Response(['error' => $error, 'message' => $error], 400);
 	}
 
 	public static function getIcon(WP_REST_Request $request)

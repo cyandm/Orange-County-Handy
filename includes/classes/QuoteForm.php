@@ -26,8 +26,29 @@ class QuoteForm
 
 	const MAX_FILE_SIZE = 10485760;
 
-	/** extension => expected image type, anything else is rejected */
-	const ALLOWED_TYPES = ['jpg' => IMAGETYPE_JPEG, 'jpeg' => IMAGETYPE_JPEG, 'png' => IMAGETYPE_PNG, 'webp' => IMAGETYPE_WEBP];
+	/** classic formats validated with getimagesize (extension => IMAGETYPE_*) */
+	const ALLOWED_TYPES = [
+		'jpg' => IMAGETYPE_JPEG,
+		'jpeg' => IMAGETYPE_JPEG,
+		'png' => IMAGETYPE_PNG,
+		'webp' => IMAGETYPE_WEBP,
+		'gif' => IMAGETYPE_GIF,
+	];
+
+	/** phone formats (iPhone HEIC/HEIF, Android AVIF) validated by file signature */
+	const PHONE_TYPES = ['heic', 'heif', 'avif'];
+
+	const ALLOWED_MIMES = [
+		'image/jpeg',
+		'image/png',
+		'image/webp',
+		'image/gif',
+		'image/heic',
+		'image/heif',
+		'image/heic-sequence',
+		'image/heif-sequence',
+		'image/avif',
+	];
 
 	/**
 	 * Timeframe options of step three
@@ -145,6 +166,7 @@ class QuoteForm
 		$photos = self::storePhotos($files, $name, $phone_digits);
 
 		$meta = [
+			'_source' => __('Full Quote Form', 'orange-county-handy'),
 			'_service' => $service->post_title,
 			'_service_id' => $service->ID,
 			'_zip' => $zip,
@@ -163,13 +185,14 @@ class QuoteForm
 		$new_post = wp_insert_post(['post_type' => 'quote_form', 'post_title' => $name . ' — ' . $service->post_title, 'post_status' => FormStatuses::defaultStatus('quote_form'), 'meta_input' => $meta]);
 
 		if (is_wp_error($new_post)) {
+			self::deletePhotos($photos);
 			return self::result(false, __('The request could not be sent. Please try again.', 'orange-county-handy'), 500);
 		}
 
 		self::recordSubmission('full');
-		self::notify(array_merge($meta, ['edit_url' => admin_url('post.php?post=' . $new_post . '&action=edit')]));
+		FormNotify::queue((int) $new_post, 'quote');
 
-		return self::result(true, __('Thanks! Your request has been sent, we will get back to you shortly.', 'orange-county-handy'), 200);
+		return self::result(true, __('Thanks! Your request has been submitted. We will get back to you shortly.', 'orange-county-handy'), 200);
 	}
 
 	/**
@@ -211,9 +234,41 @@ class QuoteForm
 		}
 
 		self::recordSubmission('fast');
-		self::notify(array_merge($meta, ['_name' => $phone, '_email' => '', 'edit_url' => admin_url('post.php?post=' . $new_post . '&action=edit')]));
+		FormNotify::queue((int) $new_post, 'quote');
 
-		return self::result(true, __('Thanks! Your request has been sent, we will call you shortly.', 'orange-county-handy'), 200);
+		return self::result(true, __('Thanks! Your request has been submitted. We will call you shortly.', 'orange-county-handy'), 200);
+	}
+
+	/**
+	 * Send email + Telegram for a stored quote (called from background queue)
+	 * @param int $post_id
+	 * @return void
+	 */
+	public static function deliverNotifications($post_id)
+	{
+		$post_id = (int) $post_id;
+		$post = get_post($post_id);
+
+		if (! $post || $post->post_type !== 'quote_form') return;
+
+		$keys = ['_source', '_service', '_service_id', '_zip', '_property_type', '_description', '_timeframe', '_preferred_date', '_notes', '_name', '_email', '_phone', '_contact_method', '_photos'];
+		$payload = ['edit_url' => admin_url('post.php?post=' . $post_id . '&action=edit')];
+
+		foreach ($keys as $key) {
+			$payload[$key] = get_post_meta($post_id, $key, true);
+		}
+
+		if (($payload['_name'] ?? '') === '' && ($payload['_phone'] ?? '') !== '') {
+			$payload['_name'] = $payload['_phone'];
+		}
+
+		if (get_post_meta($post_id, '_email_sent', true) === '') {
+			FormMail::applyResult($post_id, 'quote_form', self::notify($payload));
+		}
+
+		if (get_post_meta($post_id, '_telegram_sent', true) === '') {
+			TelegramBot::applyResult($post_id, TelegramBot::notifyQuote($payload));
+		}
 	}
 
 	/**
@@ -276,6 +331,34 @@ class QuoteForm
 	}
 
 	/**
+	 * Absolute filesystem path of a stored photo (empty when missing / outside uploads)
+	 * @param string $file path relative to the uploads folder
+	 * @return string
+	 */
+	public static function photoPath($file)
+	{
+		$file = ltrim(str_replace('\\', '/', (string) $file), '/');
+		if ($file === '' || str_contains($file, '..')) return '';
+
+		// Only quote uploads — never arbitrary paths under wp-content/uploads
+		if (! str_starts_with($file, self::UPLOAD_FOLDER . '/')) return '';
+
+		$uploads = wp_upload_dir();
+		$path = trailingslashit($uploads['basedir']) . $file;
+		$real = realpath($path);
+		$base = realpath(trailingslashit($uploads['basedir']) . self::UPLOAD_FOLDER);
+
+		if (! $real || ! $base || ! is_file($real)) return '';
+
+		$real = str_replace('\\', '/', $real);
+		$base = rtrim(str_replace('\\', '/', $base), '/');
+
+		if ($real !== $base && ! str_starts_with($real, $base . '/')) return '';
+
+		return $real;
+	}
+
+	/**
 	 * Move the uploaded photos into uploads/quotes/<year>/<month>/<phone-name-hash>/
 	 * @param array $files raw $_FILES style array
 	 * @param string $name submitter name
@@ -301,7 +384,7 @@ class QuoteForm
 		$stored = [];
 
 		foreach (array_slice($photos, 0, self::MAX_FILES) as $photo) {
-			$filename = self::storePhoto($photo, $target_dir);
+			$filename = self::storePhoto($photo, $target_dir, $name, $phone);
 
 			if ($filename) $stored[] = $folder . '/' . $filename;
 		}
@@ -310,36 +393,138 @@ class QuoteForm
 	}
 
 	/**
+	 * Remove uploaded quote photos (e.g. when the post insert fails)
+	 * @param array<int, string> $paths paths relative to the uploads folder
+	 * @return void
+	 */
+	private static function deletePhotos($paths)
+	{
+		if (! $paths) return;
+
+		$uploads = wp_upload_dir();
+		$base = trailingslashit($uploads['basedir']);
+
+		foreach ($paths as $rel) {
+			$abs = $base . ltrim((string) $rel, '/\\');
+			if (is_file($abs)) wp_delete_file($abs);
+		}
+	}
+
+	/**
 	 * Validate a single upload by its real content and move it, never trusting the sent mime type
 	 * @param array $photo single normalized $_FILES entry
 	 * @param string $target_dir absolute destination folder
+	 * @param string $name submitter name
+	 * @param string $phone digits only phone number
 	 * @return string stored file name, empty when the file was rejected
 	 */
-	private static function storePhoto($photo, $target_dir)
+	private static function storePhoto($photo, $target_dir, $name = '', $phone = '')
 	{
 		if (! isset($photo['error']) || $photo['error'] !== UPLOAD_ERR_OK) return '';
 		if (empty($photo['tmp_name']) || ! is_uploaded_file($photo['tmp_name'])) return '';
 		if (empty($photo['size']) || $photo['size'] > self::MAX_FILE_SIZE) return '';
 
 		$extension = strtolower((string) pathinfo((string) $photo['name'], PATHINFO_EXTENSION));
+		$is_phone = in_array($extension, self::PHONE_TYPES, true);
 
-		if (! isset(self::ALLOWED_TYPES[$extension])) return '';
+		if (! isset(self::ALLOWED_TYPES[$extension]) && ! $is_phone) return '';
 
-		$image = @getimagesize($photo['tmp_name']);
+		$tmp = $photo['tmp_name'];
+		$mime = '';
 
-		if (! $image || $image[2] !== self::ALLOWED_TYPES[$extension]) return '';
+		if (function_exists('finfo_open')) {
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			if ($finfo) {
+				$mime = (string) finfo_file($finfo, $tmp);
+				finfo_close($finfo);
+			}
+		}
 
-		$mime = function_exists('finfo_open') ? finfo_file(finfo_open(FILEINFO_MIME_TYPE), $photo['tmp_name']) : ($image['mime'] ?? '');
+		if ($is_phone) {
+			if (! self::isPhoneImage($tmp, $extension)) return '';
+			if ($mime && ! in_array($mime, self::ALLOWED_MIMES, true) && $mime !== 'application/octet-stream') return '';
+		} else {
+			$image = @getimagesize($tmp);
+			if (! $image || $image[2] !== self::ALLOWED_TYPES[$extension]) return '';
+			if (! $mime) $mime = (string) ($image['mime'] ?? '');
+			if (! in_array($mime, self::ALLOWED_MIMES, true)) return '';
+		}
 
-		if (! in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true)) return '';
+		$ext = $extension === 'jpeg' ? 'jpg' : $extension;
+		$person = sanitize_title($name) ?: 'client';
+		$number = preg_replace('/\D/', '', (string) $phone) ?: 'no-phone';
+		$base = $person . '-' . $number . '-' . wp_generate_password(8, false, false);
+		$dest_jpg = trailingslashit($target_dir) . $base . '.jpg';
 
-		$filename = wp_generate_password(16, false, false) . '.' . ($extension === 'jpeg' ? 'jpg' : $extension);
+		// Convert HEIC/HEIF to JPEG when Imagick supports it so admin/email clients can preview
+		if (in_array($extension, ['heic', 'heif'], true) && self::convertHeicToJpeg($tmp, $dest_jpg)) {
+			@unlink($tmp);
+			chmod($dest_jpg, 0644);
+			return $base . '.jpg';
+		}
 
-		if (! move_uploaded_file($photo['tmp_name'], trailingslashit($target_dir) . $filename)) return '';
+		$dest = trailingslashit($target_dir) . $base . '.' . $ext;
 
-		chmod(trailingslashit($target_dir) . $filename, 0644);
+		if (! move_uploaded_file($tmp, $dest)) return '';
 
-		return $filename;
+		chmod($dest, 0644);
+
+		return $base . '.' . $ext;
+	}
+
+	/**
+	 * Detect iPhone HEIC/HEIF and Android AVIF via ISO-BMFF ftyp brands (getimagesize usually cannot)
+	 */
+	private static function isPhoneImage($path, $extension)
+	{
+		$brands = $extension === 'avif'
+			? ['avif', 'avis', 'avio', 'avci']
+			: ['heic', 'heix', 'hevc', 'hevx', 'heim', 'heis', 'mif1', 'msf1'];
+
+		return self::hasFtypBrand($path, $brands);
+	}
+
+	/** @param array<int, string> $brands */
+	private static function hasFtypBrand($path, array $brands)
+	{
+		$fh = fopen($path, 'rb');
+		if (! $fh) return false;
+
+		$header = fread($fh, 64);
+		fclose($fh);
+
+		if (! is_string($header) || strlen($header) < 12 || substr($header, 4, 4) !== 'ftyp') return false;
+
+		$chunk = substr($header, 8);
+
+		foreach ($brands as $brand) {
+			if (str_contains($chunk, $brand)) return true;
+		}
+
+		return false;
+	}
+
+	/** Convert HEIC/HEIF to JPEG when Imagick + HEIC decoder are available */
+	private static function convertHeicToJpeg($tmp_path, $dest_path)
+	{
+		if (! extension_loaded('imagick') || ! class_exists('\Imagick')) return false;
+
+		try {
+			$formats = array_map('strtoupper', \Imagick::queryFormats('HEIC') ?: []);
+			if (! in_array('HEIC', $formats, true)) return false;
+
+			$image = new \Imagick($tmp_path);
+			$image->setImageFormat('jpeg');
+			$image->setImageCompressionQuality(88);
+			$ok = $image->writeImage($dest_path);
+			$image->clear();
+			$image->destroy();
+
+			return $ok && is_file($dest_path);
+		} catch (\Throwable $e) {
+			if (is_file($dest_path)) @unlink($dest_path);
+			return false;
+		}
 	}
 
 	/**
@@ -411,20 +596,19 @@ class QuoteForm
 	/**
 	 * Email the request to the site owner
 	 * @param array $data stored values
-	 * @return void
+	 * @return array{ok: bool, error: string, to: string}
 	 */
 	private static function notify($data)
 	{
-		$to = get_option('receiver_form_email') ?: get_option('email_address') ?: get_option('admin_email');
+		$subject = sprintf(__('New quote request from %s', 'orange-county-handy'), $data['_name'] ?? '');
+		$attachments = [];
 
-		if (! is_email($to)) return;
+		foreach ((array) ($data['_photos'] ?? []) as $photo) {
+			$path = self::photoPath($photo);
+			if ($path) $attachments[] = $path;
+		}
 
-		$subject = sprintf(__('New quote request from %s', 'orange-county-handy'), $data['_name']);
-		$headers = ['Content-Type: text/html; charset=UTF-8'];
-
-		if (is_email($data['_email'])) $headers[] = 'Reply-To: ' . $data['_name'] . ' <' . $data['_email'] . '>';
-
-		wp_mail($to, $subject, Templates::getEmail('quote-form', $data), $headers);
+		return FormMail::send(FormMail::recipient(), $subject, Templates::getEmail('quote-form', $data), $data['_name'] ?? '', $data['_email'] ?? '', $attachments);
 	}
 
 	private static function result($success, $message, $status)
@@ -433,22 +617,13 @@ class QuoteForm
 	}
 
 	/**
-	 * Get client IP address
+	 * Client IP for rate limiting — REMOTE_ADDR only (forwarded headers are spoofable)
 	 * @return string
 	 */
 	private static function getClientIp()
 	{
-		$ip_keys = ['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR'];
+		$ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
-		foreach ($ip_keys as $key) {
-			if (! array_key_exists($key, $_SERVER)) continue;
-
-			foreach (explode(',', $_SERVER[$key]) as $ip) {
-				$ip = trim($ip);
-				if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) return $ip;
-			}
-		}
-
-		return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+		return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : '0.0.0.0';
 	}
 }

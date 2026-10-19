@@ -130,27 +130,37 @@ class ThemeInit {
 
 	public static function logoutUser() {
 		add_action( 'wp_logout', function () {
-			wp_redirect( home_url() );
+			wp_safe_redirect( home_url() );
 			exit();
 		} );
 	}
 
 	public static function allowSvg() {
+		// SVG only for admins — untrusted SVG can carry script (stored XSS if opened directly)
+		add_filter( 'upload_mimes', function ($mimes) {
+			if ( current_user_can( 'manage_options' ) ) {
+				$mimes['svg'] = 'image/svg+xml';
+			}
+			return $mimes;
+		} );
 
 		add_filter( 'wp_check_filetype_and_ext', function ($data, $file, $filename, $mimes) {
+			if ( ! empty( $data['ext'] ) && ! empty( $data['type'] ) ) {
+				return $data;
+			}
+
 			$filetype = wp_check_filetype( $filename, $mimes );
 
-			return [ 
-				'ext' => $filetype['ext'],
-				'type' => $filetype['type'],
-				'proper_filename' => $data['proper_filename']
-			];
-		}, 10, 4 );
+			if ( $filetype['ext'] === 'svg' && $filetype['type'] === 'image/svg+xml' && current_user_can( 'manage_options' ) ) {
+				return [ 
+					'ext' => 'svg',
+					'type' => 'image/svg+xml',
+					'proper_filename' => $data['proper_filename'] ?? null,
+				];
+			}
 
-		add_filter( 'upload_mimes', function ($mimes) {
-			$mimes['svg'] = 'image/svg+xml';
-			return $mimes;
-		}, 10, 1 );
+			return $data;
+		}, 10, 4 );
 	}
 }
 

@@ -4,7 +4,26 @@
 
 const MAX_FILES = 8;
 const MAX_SIZE = 10 * 1024 * 1024;
-const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
+const ALLOWED_MIME = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/heic",
+  "image/heif",
+  "image/heic-sequence",
+  "image/heif-sequence",
+  "image/avif",
+];
+const ALLOWED_EXT = ["jpg", "jpeg", "png", "webp", "gif", "heic", "heif", "avif"];
+
+const isAllowedPhoto = (photo) => {
+  if (photo.size > MAX_SIZE) return false;
+  if (ALLOWED_MIME.includes(photo.type)) return true;
+  // iOS often sends HEIC with an empty type
+  const ext = (photo.name.split(".").pop() || "").toLowerCase();
+  return ALLOWED_EXT.includes(ext) && (!photo.type || photo.type === "application/octet-stream" || photo.type.startsWith("image/"));
+};
 
 export function QuoteForm() {
   const wizard = document.querySelector("#quote_wizard");
@@ -183,7 +202,7 @@ export function QuoteForm() {
   const addPhotos = (list) => {
     [...list].forEach((photo) => {
       if (photos.length >= MAX_FILES) return;
-      if (!ALLOWED.includes(photo.type) || photo.size > MAX_SIZE) return;
+      if (!isAllowedPhoto(photo)) return;
       photos.push(photo);
     });
 
