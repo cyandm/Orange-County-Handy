@@ -185,7 +185,14 @@ JS
 
 		self::addControl('reviews_section', 'text', 'reviews_archive_title', 'Archive Title');
 		self::addControl('reviews_section', 'text', 'reviews_archive_subtitle', 'Archive Subtitle');
+		self::addControl('reviews_section', 'text', 'reviews_average_rating', 'Average Rating', 'Leave empty to calculate from published reviews, e.g. 4.9');
+		self::addControl('reviews_section', 'text', 'reviews_average_label', 'Average Rating Label', 'Leave empty for default: Average Rating');
+		self::addControl('reviews_section', 'text', 'reviews_happy_customers', 'Happy Customers', 'Leave empty to use the published review count, e.g. 120');
+		self::addControl('reviews_section', 'text', 'reviews_happy_customers_label', 'Happy Customers Label', 'Leave empty for default: Happy customers all around orange county');
+		self::addControl('reviews_section', 'text', 'reviews_satisfaction_rate', 'Satisfaction Rate', 'Leave empty to calculate from published reviews, e.g. 98');
+		self::addControl('reviews_section', 'text', 'reviews_satisfaction_label', 'Satisfaction Rate Label', 'Leave empty for default: customer satisfaction rate');
 		self::addControl('reviews_section', 'text', 'reviews_thumbtack_hires', 'Hires on Thumbtack', 'Entered manually, e.g. 231+');
+		self::addControl('reviews_section', 'text', 'reviews_thumbtack_label', 'Hires on Thumbtack Label', 'Leave empty for default: Hires on Thumbtack');
 
 		self::addControl('blog_section', 'text', 'blog_archive_title', 'Archive Title', 'Shown on the blog archive, category and tag pages use the term name');
 

@@ -8,22 +8,39 @@
 use Cyan\Theme\Helpers\Icon;
 use Cyan\Theme\Helpers\Templates;
 
-global $wpdb;
+$custom_average = trim((string) get_option('reviews_average_rating'));
+$custom_customers = trim((string) get_option('reviews_happy_customers'));
+$custom_satisfaction = trim((string) get_option('reviews_satisfaction_rate'));
+$thumbtack_hires = trim((string) get_option('reviews_thumbtack_hires'));
 
-/* every value below is calculated from the published reviews themselves */
-$data = $wpdb->get_row("SELECT COUNT(*) AS total, AVG(pm.meta_value + 0) AS average, SUM(pm.meta_value + 0 >= 4) AS satisfied FROM {$wpdb->postmeta} pm INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE pm.meta_key = 'rating' AND p.post_type = 'review' AND p.post_status = 'publish'");
+$average = $custom_average;
+$customers = $custom_customers;
+$satisfaction = $custom_satisfaction !== '' ? rtrim($custom_satisfaction, '%') : '';
 
-$total = (int) ($data->total ?? 0);
-$average = $total ? number_format((float) $data->average, 1) : '';
-$satisfaction = $total ? round((int) $data->satisfied / $total * 100) : 0;
-$thumbtack_hires = get_option('reviews_thumbtack_hires');
+if ($custom_average === '' || $custom_customers === '' || $custom_satisfaction === '') {
+	global $wpdb;
+
+	/* every value below is calculated from the published reviews themselves */
+	$data = $wpdb->get_row("SELECT COUNT(*) AS total, AVG(pm.meta_value + 0) AS average, SUM(pm.meta_value + 0 >= 4) AS satisfied FROM {$wpdb->postmeta} pm INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id WHERE pm.meta_key = 'rating' AND p.post_type = 'review' AND p.post_status = 'publish'");
+
+	$total = (int) ($data->total ?? 0);
+
+	if ($custom_average === '') $average = $total ? number_format((float) $data->average, 1) : '';
+	if ($custom_customers === '') $customers = $total ? number_format_i18n($total) : '';
+	if ($custom_satisfaction === '') $satisfaction = $total ? (string) round((int) $data->satisfied / $total * 100) : '';
+}
+
+$average_label = trim((string) get_option('reviews_average_label')) ?: __('Average Rating', 'orange-county-handy');
+$customers_label = trim((string) get_option('reviews_happy_customers_label')) ?: __('Happy customers all around orange county', 'orange-county-handy');
+$satisfaction_label = trim((string) get_option('reviews_satisfaction_label')) ?: __('customer satisfaction rate', 'orange-county-handy');
+$thumbtack_label = trim((string) get_option('reviews_thumbtack_label')) ?: __('Hires on Thumbtack', 'orange-county-handy');
 
 $stats = [];
 
-if ($average) $stats[] = ['icon' => 'Star', 'value' => $average, 'suffix' => '/5', 'label' => __('Average Rating', 'orange-county-handy'), 'rating' => $average];
-if ($total) $stats[] = ['icon' => 'Messages,-Chat', 'value' => number_format_i18n($total), 'label' => __('Happy customers all around orange county', 'orange-county-handy')];
-if ($satisfaction) $stats[] = ['icon' => 'Thumbs-up,-Like', 'value' => $satisfaction . '%', 'label' => __('customer satisfaction rate', 'orange-county-handy')];
-if ($thumbtack_hires) $stats[] = ['icon' => 'Medal,-Prize,-Reward', 'value' => '+' . $thumbtack_hires, 'label' => __('Hires on Thumbtack', 'orange-county-handy')];
+if ($average !== '') $stats[] = ['icon' => 'Star', 'value' => $average, 'suffix' => '/5', 'label' => $average_label, 'rating' => $average];
+if ($customers !== '') $stats[] = ['icon' => 'Messages,-Chat', 'value' => $customers, 'label' => $customers_label];
+if ($satisfaction !== '' && (int) $satisfaction > 0) $stats[] = ['icon' => 'Thumbs-up,-Like', 'value' => $satisfaction . '%', 'label' => $satisfaction_label];
+if ($thumbtack_hires !== '') $stats[] = ['icon' => 'Medal,-Prize,-Reward', 'value' => '+' . ltrim($thumbtack_hires, '+'), 'label' => $thumbtack_label];
 
 if (! $stats) return;
 ?>
