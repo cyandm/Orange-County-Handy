@@ -36,7 +36,7 @@ if ($highlight) $title_html = preg_replace('/' . preg_quote(esc_html($highlight)
 				</div>
 			<?php endif; ?>
 		</div>
-		<?php Templates::getPart('services/services-buttons', ['on_yellow' => false]); ?>
+		<?php Templates::getPart('services/services-buttons', ['on_yellow' => false, 'fast_quote' => true]); ?>
 	</div>
 
 </section>

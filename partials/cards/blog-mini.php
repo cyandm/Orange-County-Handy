@@ -21,7 +21,7 @@ $category = get_the_category()[0] ?? null;
 		<div class="flex w-full flex-col gap-0.5">
 
 			<?php if ($category) : ?>
-				<span class="w-fit rounded-lg bg-cynYellowLight/30 px-2.5 py-1 text-[10px] font-semibold text-cynYellow">
+				<span class="w-fit rounded-lg bg-cynYellowLight/30 px-2.5 py-1 text-xs font-semibold text-cynYellow">
 					<?php echo esc_html($category->name); ?>
 				</span>
 			<?php endif; ?>

@@ -116,7 +116,7 @@ class ACF
 
 		$acfGroup->layoutFields->addTab('home_quote_tab', 'Fast Quote');
 		$acfGroup->contentFields->addImage('home_quote_image', 'Image', ['width' => '33%', 'return_format' => 'id']);
-		$acfGroup->basicFields->addText('home_quote_title', 'Title', ['width' => '67%', 'placeholder' => 'get a fast quote']);
+		$acfGroup->basicFields->addText('home_quote_title', 'Title', ['width' => '67%', 'placeholder' => 'get a quote']);
 		$acfGroup->contentFields->addTextEditor('home_quote_note', 'Note', ['media_upload' => 0]);
 
 		$acfGroup->layoutFields->addTab('home_steps_tab', 'How It Works');

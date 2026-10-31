@@ -17,10 +17,10 @@ $timeframes = QuoteForm::timeframes();
 $property_types = QuoteForm::propertyTypes();
 $contact_methods = QuoteForm::contactMethods();
 
-$service_card = 'flex h-full w-full cursor-pointer flex-col gap-1 rounded-lg border border-cynBorder bg-cynWhite p-1 transition-all duration-300 hover:border-cynBorderHover peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] sm:items-start sm:gap-2 sm:rounded-2xl sm:p-2';
-$time_card = 'flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-cynBorder bg-cynWhite p-2 text-center transition-all duration-300 hover:border-cynBorderHover peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_8px_9px_0_rgba(0,0,0,0.10)] lg:rounded-2xl';
-$contact_card = 'flex h-full w-full cursor-pointer flex-row items-center justify-center gap-2 rounded-lg border border-cynBorder bg-cynWhite px-2 py-3 transition-all duration-300 hover:border-cynBorderHover peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] lg:rounded-2xl';
-$circle_class = 'flex size-5 shrink-0 items-center justify-center rounded-full bg-cynBorder text-[10px] font-semibold text-cynTextWhite transition-all duration-300 group-data-[state=active]:bg-cynYellow group-data-[state=active]:text-cynTextBlack group-data-[state=done]:bg-cynYellow group-data-[state=done]:text-cynTextBlack lg:size-7 lg:text-sm';
+$service_card = 'flex h-full w-full cursor-pointer flex-col gap-1 rounded-lg border border-cynBorder bg-cynWhite p-1 transition-all duration-300 [&_i]:text-cynTextBlack [&_i]:transition-colors [&_i]:duration-300 [&_svg]:transition-colors [&_svg]:duration-300 [&_path]:transition-[stroke,fill] [&_path]:duration-300 hover:border-cynYellow hover:bg-cynYellowLight hover:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] hover:[&_i]:text-cynYellow peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] peer-checked:[&_i]:text-cynYellow sm:items-start sm:gap-2 sm:rounded-2xl sm:p-2 max-sm:py-2.5';
+$time_card = 'flex h-full w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-cynBorder bg-cynWhite p-2 text-center transition-all duration-300 hover:border-cynYellow hover:bg-cynYellowLight hover:shadow-[0_8px_9px_0_rgba(0,0,0,0.10)] peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_8px_9px_0_rgba(0,0,0,0.10)] lg:rounded-2xl';
+$contact_card = 'flex h-full w-full cursor-pointer flex-row items-center justify-center gap-2 rounded-lg border border-cynBorder bg-cynWhite px-2 py-3 transition-all duration-300 hover:border-cynYellow hover:bg-cynYellowLight hover:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] peer-checked:border-cynYellow peer-checked:bg-cynYellowLight peer-checked:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)] lg:rounded-2xl';
+$circle_class = 'flex size-5 shrink-0 items-center justify-center rounded-full bg-cynBorder text-xs font-semibold text-cynTextWhite transition-all duration-300 group-data-[state=active]:bg-cynYellow group-data-[state=active]:text-cynTextBlack group-data-[state=done]:bg-cynYellow group-data-[state=done]:text-cynTextBlack lg:size-7 lg:text-sm';
 $form_url = rest_url('cyn/v1/quote_form');
 ?>
 
@@ -63,18 +63,18 @@ $form_url = rest_url('cyn/v1/quote_form');
 				<?php esc_html_e('What can we help you with?', 'orange-county-handy'); ?>
 			</p>
 
-			<div class="grid grid-cols-4 items-stretch gap-1 sm:gap-3">
+			<div class="grid grid-cols-3 sm:grid-cols-4 items-stretch gap-1 sm:gap-3">
 				<?php foreach ($services as $service) : ?>
 					<?php $icon = get_field('service_icon', $service->ID) ?: 'Tools,-Settings'; ?>
 					<label class="flex h-full">
 						<input type="radio" name="service" value="<?php echo esc_attr($service->ID); ?>" data-label="<?php echo esc_attr($service->post_title); ?>" class="peer sr-only" required>
 						<span class="<?php echo esc_attr($service_card); ?>">
 							<span class="flex w-full shrink-0 items-center justify-center sm:justify-between">
-								<i class="size-4 flex shrink-0 items-center justify-center text-cynTextBlack sm:size-6 [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
+								<i class="size-6 flex shrink-0 items-center justify-center sm:size-8 [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
 									<?php Icon::print($icon); ?>
 								</i>
 							</span>
-							<span class="w-full flex-1 text-center text-[10px] font-medium text-cynTextBlack sm:text-start sm:text-sm">
+							<span class="w-full flex-1 text-center text-xs font-medium text-cynTextBlack sm:text-start sm:text-sm max-sm:break-words">
 								<?php echo esc_html($service->post_title); ?>
 							</span>
 						</span>
@@ -333,6 +333,11 @@ $form_url = rest_url('cyn/v1/quote_form');
 					['key' => 'property', 'label' => __('Property Type', 'orange-county-handy')],
 					['key' => 'description', 'label' => __('Project Description', 'orange-county-handy')],
 					['key' => 'timeframe', 'label' => __('Timeline', 'orange-county-handy')],
+					['key' => 'preferred_date', 'label' => __('preferred date', 'orange-county-handy')],
+					['key' => 'notes', 'label' => __('Scheduling Notes', 'orange-county-handy')],
+					['key' => 'name', 'label' => __('Name', 'orange-county-handy')],
+					['key' => 'email', 'label' => __('Email', 'orange-county-handy')],
+					['key' => 'phone', 'label' => __('Phone', 'orange-county-handy')],
 					['key' => 'contact', 'label' => __('Contact Method', 'orange-county-handy')],
 				];
 				foreach ($summary_rows as $row) :

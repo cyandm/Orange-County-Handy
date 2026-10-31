@@ -52,7 +52,7 @@ get_header(); ?>
 					} else {
 						?>
 						<a href="<?php the_permalink(); ?>" class="flex flex-col gap-2 rounded-2xl bg-cynBG p-5 transition-all duration-300 hover:shadow-[0_9px_8px_0_rgba(0,0,0,0.10)]">
-							<span class="w-fit rounded-lg bg-cynYellowLight/30 px-2.5 py-1 text-[10px] font-semibold uppercase text-cynYellow">
+							<span class="w-fit rounded-lg bg-cynYellowLight/30 px-2.5 py-1 text-xs font-semibold uppercase text-cynYellow">
 								<?php
 								$pto = get_post_type_object($type);
 								echo esc_html($pto->labels->singular_name ?? $type);

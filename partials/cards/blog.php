@@ -22,7 +22,7 @@ $read_time = max(1, (int) ceil(str_word_count(wp_strip_all_tags(get_the_content(
 		<div class="flex flex-col gap-2">
 
 			<?php if ($category) : ?>
-				<span class="w-fit rounded-lg bg-cynYellowLight/30 px-2.5 py-1 text-[10px] font-semibold text-cynYellow">
+				<span class="w-fit rounded-lg bg-cynYellowLight/30 px-2.5 py-1 text-xs font-semibold text-cynYellow">
 					<?php echo esc_html($category->name); ?>
 				</span>
 			<?php endif; ?>

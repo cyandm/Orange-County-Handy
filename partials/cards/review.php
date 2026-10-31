@@ -33,10 +33,10 @@ $class = get_query_var('args', [])['class'] ?? '';
 			<?php echo esc_html($initial); ?>
 		</span>
 		<div class="flex flex-col gap-1 lg:gap-2">
-			<span class="text-[10px] lg:text-xs font-medium capitalize text-cynTextBlack">
+			<span class="text-xs font-medium capitalize text-cynTextBlack">
 				<?php echo esc_html($reviewer_name); ?>
 			</span>
-			<time class="text-[10px] lg:text-xs font-normal text-cynTextGray" datetime="<?php echo esc_attr(get_the_date('c')); ?>">
+			<time class="text-xs font-normal text-cynTextGray" datetime="<?php echo esc_attr(get_the_date('c')); ?>">
 				<?php echo esc_html(get_the_date('Y.m.d')); ?>
 			</time>
 		</div>

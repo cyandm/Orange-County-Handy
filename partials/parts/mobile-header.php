@@ -52,7 +52,7 @@ $has_socials = $instagram_link || $whatsapp_number || $twitter_link || $facebook
 	</div>
 </section>
 
-<section class="mobile-menu-scroll h-screen bg-cynBG p-5 w-0 fixed inset-0 z-[60] opacity-0 pointer-events-none overflow-y-auto data-[active='true']:w-full data-[active='true']:opacity-100 data-[active='true']:pointer-events-auto duration-500" modal data-modal-name="menu-modal" data-modal-layer="drawer" data-active="false">
+<section class="mobile-menu-scroll h-screen bg-cynBG p-5 w-0 fixed inset-0 z-[120] opacity-0 pointer-events-none overflow-y-auto data-[active='true']:w-full data-[active='true']:opacity-100 data-[active='true']:pointer-events-auto duration-500" modal data-modal-name="menu-modal" data-modal-layer="drawer" data-active="false">
 
 	<div class="flex justify-between items-center">
 		<button type="button" class="flex items-center gap-1 text-cynTextBlack cursor-pointer" modal-closer data-modal-name="menu-modal" aria-label="<?php esc_attr_e('Close menu', 'orange-county-handy'); ?>">

@@ -14,8 +14,8 @@ if (! $quote_url) return;
 
 $services = get_posts(['post_type' => 'service', 'posts_per_page' => -1, 'orderby' => 'menu_order title', 'order' => 'ASC']);
 $image_id = (int) get_field('home_quote_image');
-$title = get_field('home_quote_title') ?: __('get a fast quote', 'orange-county-handy');
-$note = get_field('home_quote_note') ?: __('Have photos or more details to share? Use our full quote form.', 'orange-county-handy');
+$title = get_field('home_quote_title') ?: __('get a quote', 'orange-county-handy');
+$note = get_field('home_quote_note') ?: __('Do You Have photos or more details to share? Use our full quote form Below.', 'orange-county-handy');
 
 $form_url = rest_url('cyn/v1/quote_form/fast');
 ?>
@@ -37,18 +37,18 @@ $form_url = rest_url('cyn/v1/quote_form/fast');
 				<?php echo esc_html($title); ?>
 			</h2>
 
-			<form
-				id="home_quote_form"
-				action="<?php echo esc_url($form_url); ?>"
-				method="post"
-				hx-post="<?php echo esc_url($form_url); ?>"
-				hx-swap="none"
-				hx-disabled-elt="find button[type=submit]"
-				hx-on::before-request="const btn = event.target.querySelector('button[type=submit]'); if (btn) btn.classList.add('is-loading'); const result = document.querySelector('#home_quote_result'); if (result) { result.hidden = true; result.textContent = ''; }"
-				hx-on::after-request="const btn = event.target.querySelector('button[type=submit]'); if (btn) btn.classList.remove('is-loading'); const result = document.querySelector('#home_quote_result'); if (!result) return; const ok = event.detail.successful; let msg = ''; try { const data = JSON.parse(event.detail.xhr.responseText); msg = data.message || data.error || ''; } catch (e) { msg = ''; } if (!msg) msg = ok ? '<?php echo esc_js(__('Thanks! Your request has been sent, we will call you shortly.', 'orange-county-handy')); ?>' : '<?php echo esc_js(__('Something went wrong. Please try again.', 'orange-county-handy')); ?>'; result.textContent = msg; result.classList.toggle('bg-cynYellow', ok); result.classList.toggle('bg-cynRed', !ok); result.classList.toggle('text-cynTextBlack', ok); result.classList.toggle('text-cynTextWhite', !ok); result.hidden = false; if (ok) event.target.reset();"
-				class="flex flex-col gap-3 rounded-lg bg-cynBG p-2.5">
+			<div class="flex w-full flex-col gap-2 lg:gap-4">
 
-				<div class="flex flex-col gap-2">
+				<form
+					id="home_quote_form"
+					action="<?php echo esc_url($form_url); ?>"
+					method="post"
+					hx-post="<?php echo esc_url($form_url); ?>"
+					hx-swap="none"
+					hx-disabled-elt="find button[type=submit]"
+					hx-on::before-request="const btn = event.target.querySelector('button[type=submit]'); if (btn) btn.classList.add('is-loading'); const result = document.querySelector('#home_quote_result'); if (result) { result.hidden = true; result.textContent = ''; }"
+					hx-on::after-request="const btn = event.target.querySelector('button[type=submit]'); if (btn) btn.classList.remove('is-loading'); const result = document.querySelector('#home_quote_result'); if (!result) return; const ok = event.detail.successful; let msg = ''; try { const data = JSON.parse(event.detail.xhr.responseText); msg = data.message || data.error || ''; } catch (e) { msg = ''; } if (!msg) msg = ok ? '<?php echo esc_js(__('Thanks! Your request has been sent, we will call you shortly.', 'orange-county-handy')); ?>' : '<?php echo esc_js(__('Something went wrong. Please try again.', 'orange-county-handy')); ?>'; result.textContent = msg; result.classList.toggle('bg-cynYellow', ok); result.classList.toggle('bg-cynRed', !ok); result.classList.toggle('text-cynTextBlack', ok); result.classList.toggle('text-cynTextWhite', !ok); result.hidden = false; if (ok) event.target.reset();"
+					class="flex w-full flex-col gap-2 rounded-lg bg-cynBG p-2.5">
 
 					<?php if ($services) : ?>
 						<label class="secondary-input relative !p-0" for="home-quote-service">
@@ -69,7 +69,7 @@ $form_url = rest_url('cyn/v1/quote_form/fast');
 					<?php endif; ?>
 
 					<div class="flex items-center gap-2">
-						<label class="secondary-input min-w-0 flex-1 lg:max-w-64" for="home-quote-zip">
+						<label class="secondary-input min-w-0 flex-1 lg:w-64 lg:flex-none" for="home-quote-zip">
 							<input id="home-quote-zip" name="zip" type="text" inputmode="numeric" pattern="\d{5}(-\d{4})?" maxlength="10" autocomplete="postal-code" placeholder="<?php esc_attr_e('zip code', 'orange-county-handy'); ?>" aria-label="<?php esc_attr_e('zip code', 'orange-county-handy'); ?>" required>
 						</label>
 						<label class="secondary-input min-w-0 flex-1" for="home-quote-phone">
@@ -77,14 +77,7 @@ $form_url = rest_url('cyn/v1/quote_form/fast');
 						</label>
 					</div>
 
-					<div class="px-2 text-xs font-normal text-cynTextBlack">
-						<?php echo wp_kses_post($note); ?>
-					</div>
-
-				</div>
-
-				<div class="flex items-center gap-2">
-					<button type="submit" class="submit-form-btn primary-btn">
+					<button type="submit" class="submit-form-btn primary-btn self-start">
 						<span class="submit-form-btn__idle">
 							<?php esc_html_e('Request my Quote', 'orange-county-handy'); ?>
 						</span>
@@ -97,14 +90,34 @@ $form_url = rest_url('cyn/v1/quote_form/fast');
 							</span>
 						</span>
 					</button>
-					<a href="<?php echo esc_url($quote_url); ?>" class="tertiary-btn !border-cynBorderHover">
-						<?php esc_html_e('full quote form', 'orange-county-handy'); ?>
+
+					<p id="home_quote_result" class="rounded-lg px-3 py-2 text-sm font-medium" role="status" aria-live="polite" hidden></p>
+
+				</form>
+
+				<div class="flex w-full items-center justify-center gap-3">
+					<span class="h-px min-w-0 flex-1 bg-cynBorder" aria-hidden="true"></span>
+					<span class="text-base font-medium text-cynTextGray">
+						<?php esc_html_e('Or', 'orange-county-handy'); ?>
+					</span>
+					<span class="h-px min-w-0 flex-1 bg-cynBorder" aria-hidden="true"></span>
+				</div>
+
+				<div class="flex w-full flex-col gap-2">
+					<div class="text-sm font-normal text-cynTextBlack">
+						<?php echo wp_kses_post($note); ?>
+					</div>
+					<a href="<?php echo esc_url($quote_url); ?>" class="tertiary-btn inline-flex items-center gap-2 self-start !border-cynBorderHover !ps-4 !pe-2">
+						<span>
+							<?php esc_html_e('Go to full quote form', 'orange-county-handy'); ?>
+						</span>
+						<i class="size-6 flex shrink-0 items-center justify-center [&_svg]:size-full [&_svg]:stroke-[1.5]" aria-hidden="true">
+							<?php Icon::print('Arrow-23'); ?>
+						</i>
 					</a>
 				</div>
 
-				<p id="home_quote_result" class="rounded-lg px-3 py-2 text-sm font-medium" role="status" aria-live="polite" hidden></p>
-
-			</form>
+			</div>
 
 		</div>
 

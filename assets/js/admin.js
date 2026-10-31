@@ -11,7 +11,7 @@
     if (!option.id) return option.text;
 
     const $row = $(
-      '<span class="cyn-icon-option"><span class="cyn-icon-option__svg" aria-hidden="true"></span><span class="cyn-icon-option__name"></span></span>'
+      '<span class="cyn-icon-option"><span class="cyn-icon-option__svg" aria-hidden="true"></span><span class="cyn-icon-option__name"></span></span>',
     );
     const $svg = $row.find(".cyn-icon-option__svg");
 
@@ -48,9 +48,12 @@
 
       // Keep the saved <option> visible after reload (AJAX Select2 otherwise shows "Select")
       const selected = String($select.val() || "");
-      const hasOption = $select.find("option").toArray().some(function (option) {
-        return option.value === selected;
-      });
+      const hasOption = $select
+        .find("option")
+        .toArray()
+        .some(function (option) {
+          return option.value === selected;
+        });
       if (selected && !hasOption) {
         $select.append(new Option(selected, selected, true, true));
       }

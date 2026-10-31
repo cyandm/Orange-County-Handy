@@ -92,7 +92,7 @@ $form_url = rest_url('cyn/v1/contact_form');
 
 		</div>
 
-		<p class="px-2 text-[10px] font-normal text-cynTextBlack">
+		<p class="px-2 text-xs font-normal text-cynTextBlack">
 			<?php esc_html_e('Your Information is Safe With Us. We Never Share Your Details', 'orange-county-handy'); ?>
 		</p>
 

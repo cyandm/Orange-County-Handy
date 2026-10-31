@@ -15,6 +15,7 @@ $render_template = $args['render_template'] ?? true;
 	<footer class="mt-16 lg:mt-24">
 		<?php Templates::getPart( 'footer' ); ?>
 	</footer>
+	<?php Templates::getPart( 'quote-popup' ); ?>
 	<?php Templates::getPart( 'backdrop' ); ?>
 <?php endif; ?>
 

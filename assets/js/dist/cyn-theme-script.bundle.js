@@ -20567,12 +20567,24 @@
       }
       return field.value.trim();
     };
+    const formatPreferredDate = (value) => {
+      if (!value) return "";
+      const date = /* @__PURE__ */ new Date(`${value}T00:00:00`);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleDateString(void 0, { year: "numeric", month: "short", day: "numeric" });
+    };
     const fillSummary = () => {
+      const name = [selectedLabel("first_name"), selectedLabel("last_name")].filter(Boolean).join(" ");
       form.querySelector('[data-summary="service"]').textContent = selectedLabel("service");
       form.querySelector('[data-summary="zip"]').textContent = selectedLabel("zip");
       form.querySelector('[data-summary="property"]').textContent = selectedLabel("property_type");
       form.querySelector('[data-summary="description"]').textContent = selectedLabel("description");
       form.querySelector('[data-summary="timeframe"]').textContent = selectedLabel("timeframe");
+      form.querySelector('[data-summary="preferred_date"]').textContent = formatPreferredDate(selectedLabel("preferred_date"));
+      form.querySelector('[data-summary="notes"]').textContent = selectedLabel("notes");
+      form.querySelector('[data-summary="name"]').textContent = name;
+      form.querySelector('[data-summary="email"]').textContent = selectedLabel("email");
+      form.querySelector('[data-summary="phone"]').textContent = selectedLabel("phone");
       form.querySelector('[data-summary="contact"]').textContent = selectedLabel("contact_method");
       summaryPhotos.textContent = "";
       summaryPhotos.classList.toggle("hidden", photos.length === 0);
@@ -20647,9 +20659,9 @@
         image.className = "h-32 w-full object-cover lg:h-44";
         const remove = document.createElement("button");
         remove.type = "button";
-        remove.className = "absolute end-2 top-2 flex size-8 items-center justify-center rounded-lg bg-cynWhite text-cynTextBlack transition-all duration-300 hover:bg-cynYellow";
+        remove.className = "absolute end-2 top-2 flex size-8 items-center justify-center rounded-full bg-cynYellow text-cynTextBlack transition-all duration-300 [&_svg]:size-4 [&_svg]:stroke-[1.5]";
         remove.setAttribute("aria-label", input.dataset.removeLabel || "Remove photo");
-        remove.textContent = "\xD7";
+        remove.innerHTML = `<svg width="12" height="12" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2.857 10.856L10.857 2.856" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M10.857 10.856L2.857 2.856" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
         remove.addEventListener("click", () => {
           photos.splice(index, 1);
           syncInput();
