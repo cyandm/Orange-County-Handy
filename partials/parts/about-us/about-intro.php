@@ -16,25 +16,26 @@ $quote = get_field('about_intro_quote') ?: __("One point of contact.\nClear comm
 
 <section class="container flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-10">
 
-	<div class="relative w-full shrink-0 pb-8 pe-5 lg:w-[33%] lg:pb-10 lg:pe-6">
+	<div class="relative w-full shrink-0 lg:w-[33%] <?php echo $side_id ? 'pb-8 pe-5 lg:pb-10 lg:pe-6' : 'pb-0 pe-0 lg:pb-0 lg:pe-0'; ?>">
 		<?php if ($main_id) : ?>
 			<div class="overflow-hidden rounded-2xl">
 				<?php echo wp_get_attachment_image((int) $main_id, 'large', false, ['class' => 'w-full h-72 sm:h-96 lg:h-80 object-cover', 'alt' => esc_attr($title)]); ?>
 			</div>
 		<?php endif; ?>
 
-		<div class="absolute end-0 bottom-6 z-10 translate-x-1 translate-y-2 lg:translate-x-2 lg:translate-y-3">
-			<div class="relative rounded-2xl shadow-[0_4px_9px_rgba(0,0,0,0.10),0_15px_15px_rgba(0,0,0,0.09)]">
-				<div class="relative h-40 w-[calc(8rem+15px)] overflow-hidden rounded-2xl lg:h-44 lg:w-[calc(9rem+15px)]">
-					<div class="absolute start-0 top-0 h-40 w-32 rounded-2xl lg:h-44 lg:w-36" style="background-color: <?php echo esc_attr($accent_color); ?>" aria-hidden="true"></div>
-					<?php if ($side_id) : ?>
+
+		<?php if ($side_id) : ?>
+			<div class="absolute end-0 bottom-6 z-10 translate-x-1 translate-y-2 lg:translate-x-2 lg:translate-y-3">
+				<div class="relative rounded-2xl shadow-[0_4px_9px_rgba(0,0,0,0.10),0_15px_15px_rgba(0,0,0,0.09)]">
+					<div class="relative h-40 w-[calc(8rem+15px)] overflow-hidden rounded-2xl lg:h-44 lg:w-[calc(9rem+15px)]">
+						<div class="absolute start-0 top-0 h-40 w-32 rounded-2xl lg:h-44 lg:w-36" style="background-color: <?php echo esc_attr($accent_color); ?>" aria-hidden="true"></div>
 						<div class="absolute start-[15px] top-0 h-40 w-32 overflow-hidden rounded-e-2xl lg:h-44 lg:w-36">
 							<?php echo wp_get_attachment_image((int) $side_id, 'medium', false, ['class' => 'size-full object-cover', 'alt' => '']); ?>
 						</div>
-					<?php endif; ?>
+					</div>
 				</div>
 			</div>
-		</div>
+		<?php endif; ?>
 	</div>
 
 	<div class="flex flex-1 flex-col items-center gap-4 text-center lg:items-start lg:text-start">

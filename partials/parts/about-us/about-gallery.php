@@ -8,7 +8,7 @@
 use Cyan\Theme\Helpers\Templates;
 
 $ids = [];
-for ($i = 1; $i <= 8; $i++) {
+for ($i = 1; $i <= 16; $i++) {
 	$id = (int) get_field("about_gallery_{$i}");
 	if ($id) $ids[] = $id;
 }
